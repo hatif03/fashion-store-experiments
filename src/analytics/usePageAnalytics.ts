@@ -20,12 +20,15 @@ function markEngaged(reason: "second_page" | "time_on_page") {
 export function usePageAnalytics(): void {
   const { pathname } = useLocation();
   const pages = React.useRef(0);
+  const lastPath = React.useRef<string | null>(null);
 
   React.useEffect(() => {
     startFlagsmith();
   }, []);
 
   React.useEffect(() => {
+    if (lastPath.current === pathname) return;
+    lastPath.current = pathname;
     pages.current += 1;
     track("page_viewed", { metadata: { page: pathname.split("/")[1] || "home" } });
     if (pages.current === 2) markEngaged("second_page");

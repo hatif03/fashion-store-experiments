@@ -38,7 +38,10 @@ export function SiteFooter() {
         </div>
         <WordmarkBanner name={settings.name} className="mt-20 text-foreground" />
         <div className="flex flex-col gap-2 border-t border-border py-6 text-[12px] text-muted-foreground sm:flex-row sm:justify-between">
-          <p>{settings.footer.note}</p>
+          <div className="flex flex-col gap-1">
+            <p>{settings.footer.note}</p>
+            <p>We test changes to this store with anonymous visit data: a random id in your browser, never your name, email or IP address.</p>
+          </div>
           <p className="tabular">© {new Date().getFullYear()} {settings.name}</p>
         </div>
       </div>
