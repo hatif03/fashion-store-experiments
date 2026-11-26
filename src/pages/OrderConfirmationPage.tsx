@@ -9,14 +9,19 @@ export default function OrderConfirmationPage() {
   const { state } = useLocation();
   const order = ((state as PlacedOrder | null)?.reference === reference ? (state as PlacedOrder) : null) ?? recallOrder(reference);
   useDocumentTitle(`Order ${reference} — ${catalog.settings.name}`);
+  const demo = order?.status === "demo";
   const money = (minor: number) => new Intl.NumberFormat(catalog.settings.locale, { style: "currency", currency: order?.currency ?? catalog.settings.currency, minimumFractionDigits: minor % 100 === 0 ? 0 : 2 }).format(minor / 100);
 
   return (
     <div className="mx-auto max-w-[880px] px-4 pb-28 pt-32 sm:px-6 md:pt-40">
-      <p className="label text-muted-foreground">Order received</p>
+      <p className="label text-muted-foreground">{demo ? "Demo order placed" : "Order received"}</p>
       <h1 className="type-wide mt-4 text-[clamp(2.25rem,5vw,4rem)] font-extralight leading-[1.02] tracking-[-0.02em]">Thank you.</h1>
       <p className="mt-6 text-[17px]">
-        Your order reference is <strong className="tabular font-medium">{reference}</strong>. Keep it for any questions about your order.
+        {demo ? (
+          <>Your demo reference is <strong className="tabular font-medium">{reference}</strong>.</>
+        ) : (
+          <>Your order reference is <strong className="tabular font-medium">{reference}</strong>. Keep it for any questions about your order.</>
+        )}
       </p>
 
       {order ? (
@@ -24,12 +29,16 @@ export default function OrderConfirmationPage() {
           <div className="mt-12 grid gap-8 border-t border-border pt-8 sm:grid-cols-2">
             <div>
               <p className="label mb-3 text-muted-foreground">Payment</p>
-              <p className="text-[15px] font-medium">{order.paymentMethod} · not yet paid</p>
+              <p className="text-[15px] font-medium">{order.paymentMethod} · {demo ? "nothing charged" : "not yet paid"}</p>
               {order.paymentInstructions && <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground">{order.paymentInstructions}</p>}
             </div>
             <div>
               <p className="label mb-3 text-muted-foreground">What happens next</p>
-              <p className="text-[14px] leading-relaxed text-muted-foreground">The studio will confirm your order and prepare it for dispatch. Questions? Write to {catalog.settings.contact?.email ? <a className="underline underline-offset-2" href={`mailto:${catalog.settings.contact.email}`}>{catalog.settings.contact.email}</a> : "the studio"} with your reference.</p>
+              {demo ? (
+                <p className="text-[14px] leading-relaxed text-muted-foreground">Nothing. This store is a showroom, so no order was sent to the studio. Thank you for trying the checkout: your visit helps us test the store.</p>
+              ) : (
+                <p className="text-[14px] leading-relaxed text-muted-foreground">The studio will confirm your order and prepare it for dispatch. Questions? Write to {catalog.settings.contact?.email ? <a className="underline underline-offset-2" href={`mailto:${catalog.settings.contact.email}`}>{catalog.settings.contact.email}</a> : "the studio"} with your reference.</p>
+              )}
             </div>
           </div>
           <ul className="mt-10 divide-y divide-border border-y border-border">

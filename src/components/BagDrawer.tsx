@@ -109,20 +109,19 @@ export function BagDrawer() {
                 <span className="tabular text-lg font-light">{formatPrice(catalog, subtotal)}</span>
               </div>
               <p className="mt-1 text-[13px] text-muted-foreground">{shipping === 0 ? "Shipping is included." : `Shipping ${formatPrice(catalog, shipping)}, added at checkout.`}</p>
-              {checkout.open ? (
-                <Link to="/checkout" onClick={close} className="mt-5 flex h-13 w-full items-center justify-center bg-foreground text-[13px] font-medium tracking-[0.06em] text-background transition-opacity hover:opacity-90">
-                  Checkout
-                </Link>
+              {checkout.open || checkout.reason === "demo" ? (
+                <>
+                  <Link to="/checkout" onClick={close} className="mt-5 flex h-13 w-full items-center justify-center bg-foreground text-[13px] font-medium tracking-[0.06em] text-background transition-opacity hover:opacity-90">
+                    Checkout
+                  </Link>
+                  {!checkout.open && <p className="mt-3 text-[12px] leading-relaxed text-muted-foreground">This store is a showroom: checkout is a demo that charges nothing and asks for no personal details.</p>}
+                </>
               ) : (
                 <>
                   <button type="button" disabled aria-describedby="checkout-note" className="mt-5 flex h-13 w-full cursor-not-allowed items-center justify-center bg-foreground text-[13px] font-medium tracking-[0.06em] text-background opacity-40">
                     Checkout
                   </button>
-                  <p id="checkout-note" className="mt-3 text-[12px] leading-relaxed text-muted-foreground">
-                    {checkout.reason === "demo"
-                      ? "This is a demo of the store: ordering is turned off and your bag is kept in this browser only."
-                      : "Checkout isn’t open yet. Your bag is saved in this browser."}
-                  </p>
+                  <p id="checkout-note" className="mt-3 text-[12px] leading-relaxed text-muted-foreground">Checkout isn’t open yet. Your bag is saved in this browser.</p>
                 </>
               )}
             </div>

@@ -209,7 +209,7 @@ const settings: StoreSettings = {
     lookbookId: "lookbook-01",
   },
   footer: {
-    note: "A preview of the STILLFORM storefront. Orders and payments are not yet enabled.",
+    note: "A showroom of the STILLFORM storefront. Checkout is a demo: nothing is charged or sent.",
     links: [
       { label: "Shop all", href: "/shop" },
       { label: "Collection 01", href: "/#collection" },

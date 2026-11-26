@@ -5,6 +5,7 @@ import { useBag } from "@/bag/BagProvider";
 import { useCatalogState } from "@/catalog/CatalogProvider";
 import { colorwayOf, formatPrice, variantBySku } from "@/catalog/selectors";
 import { checkoutAvailability, describeOrderError, placeOrder, rememberOrder, shippingFor, validateOrderForm, type FieldErrors, type OrderForm } from "@/checkout/checkout";
+import { DemoCheckout } from "@/checkout/DemoCheckout";
 import { Turnstile, type TurnstileHandle } from "@/checkout/Turnstile";
 import { GarmentImage } from "@/components/GarmentImage";
 import { useDocumentTitle } from "@/lib/hooks";
@@ -31,16 +32,20 @@ export default function CheckoutPage() {
   const subtotal = bagSubtotal(catalog, bag.lines);
   const shipping = shippingFor(catalog, subtotal);
 
+  if (!availability.open && availability.reason === "demo") {
+    return (
+      <Shell>
+        <DemoCheckout />
+      </Shell>
+    );
+  }
+
   if (!availability.open) {
     return (
       <Shell>
         <p className="label text-muted-foreground">Checkout</p>
-        <h1 className="type-wide mt-4 max-w-[20ch] text-[clamp(2rem,4vw,3rem)] font-extralight leading-tight">{availability.reason === "demo" ? "This is a preview of the store." : "Checkout isn’t open yet."}</h1>
-        <p className="mt-6 max-w-[52ch] text-[15px] leading-relaxed text-muted-foreground">
-          {availability.reason === "demo"
-            ? "Ordering is turned off in the demo. Connect the store to Supabase to take real orders; your bag is kept in this browser in the meantime."
-            : "The store isn’t taking orders at the moment. Your bag is saved in this browser, so you can come back to it."}
-        </p>
+        <h1 className="type-wide mt-4 max-w-[20ch] text-[clamp(2rem,4vw,3rem)] font-extralight leading-tight">Checkout isn’t open yet.</h1>
+        <p className="mt-6 max-w-[52ch] text-[15px] leading-relaxed text-muted-foreground">The store isn’t taking orders at the moment. Your bag is saved in this browser, so you can come back to it.</p>
         <Link to="/shop" className="label link-draw mt-10 inline-block py-1">Keep browsing</Link>
       </Shell>
     );

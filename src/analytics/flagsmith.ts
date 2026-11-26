@@ -42,7 +42,8 @@ export function startFlagsmith(): void {
         device: visit.device,
       },
       enableEvents: true,
-      eventProcessorConfig: { flushInterval: 3000 },
+      // A short interval: the flush on pagehide is not guaranteed to leave before the page unloads.
+      eventProcessorConfig: { flushInterval: 1000 },
     })
     .then(
       () => setStatus("ready"),
