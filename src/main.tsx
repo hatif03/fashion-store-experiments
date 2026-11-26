@@ -32,6 +32,9 @@ const routes: RouteObject[] = [
   },
 ];
 
+// Live visitor data for demos: not in the navigation, reached from the footer's ©.
+routes.unshift({ path: "live", HydrateFallback: () => null, lazy: async () => ({ Component: (await import("./live/LivePage")).default }) });
+
 // The dashboard is loaded only when an administrator opens it.
 if (studioEnabled) {
   routes.unshift({ path: "admin/*", lazy: async () => ({ Component: (await import("./admin/AdminApp")).default }) });

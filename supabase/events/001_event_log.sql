@@ -113,9 +113,9 @@ as $$
       from e
     ),
     'funnel', (
-      select jsonb_agg(jsonb_build_object('step', s.step, 'event', s.event, 'visitors', (select count(distinct visitor_id) from e where e.event = s.event)) order by s.ord)
+      select jsonb_agg(jsonb_build_object('step', s.step, 'event', s.event, 'visitors', (select count(distinct visitor_id) from e where s.event = 'any' or e.event = s.event)) order by s.ord)
       from (values
-        (1, 'Visited', 'page_viewed'),
+        (1, 'Visited', 'any'),
         (2, 'Opened a product', 'product_viewed'),
         (3, 'Added to bag', 'piece_added'),
         (4, 'Started checkout', 'checkout_started'),

@@ -74,6 +74,35 @@
   color: var(--color-foreground);
 }
 
+/* The /live map: a slow ring around each city, a ping when something happens. */
+@keyframes live-ring {
+  from { transform: scale(1); opacity: 0.6; }
+  to { transform: scale(3.4); opacity: 0; }
+}
+@keyframes live-ping {
+  from { transform: scale(0.5); opacity: 1; }
+  to { transform: scale(7); opacity: 0; }
+}
+@keyframes live-flash {
+  0%, 60% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes live-draw {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.live-ring, .live-ping, .live-flash {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.live-ring { animation: live-ring 3s var(--ease-settle) infinite; }
+.live-ping { animation: live-ping 2.2s cubic-bezier(0.2, 0.7, 0.2, 1) forwards; }
+.live-flash { animation: live-flash 2.2s ease-out forwards; }
+.live-draw { animation: live-draw 1.6s ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .live-ring, .live-ping, .live-flash, .live-draw { animation: none; }
+}
+
 /* Type: one family, three widths. */
 @utility type-wide {
   font-stretch: 125%;

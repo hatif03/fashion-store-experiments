@@ -42,7 +42,9 @@ export function SiteFooter() {
             <p>{settings.footer.note}</p>
             <p>We test changes to this store with anonymous visit data: a random id in your browser, never your name, email or IP address.</p>
           </div>
-          <p className="tabular">© {new Date().getFullYear()} {settings.name}</p>
+          <Link to="/live" className="tabular self-start hover:text-foreground" aria-label={`© ${new Date().getFullYear()} ${settings.name}. Live visitor data`}>
+            © {new Date().getFullYear()} {settings.name}
+          </Link>
         </div>
       </div>
     </footer>
