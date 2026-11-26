@@ -33,6 +33,42 @@ const assets: MediaAsset[] = [
   ...railSet("pique-polo", "bottle", "Piqué polo in bottle green", "supplied-retouched"),
 ];
 
+// Front-view cut-outs prepared by scripts/prepare-generated-cutouts.mjs from
+// AI-generated photographs made with the supplied cut-outs as references.
+
+const GENERATED_CUTOUT_NOTE = "AI-generated front view, made with the supplied cut-outs as references. Replace with a studio photograph (front, back and side) on the same canvas.";
+
+function frontView(product: string, colorway: string, label: string): MediaAsset {
+  return {
+    id: `${product}/${colorway}/front`,
+    src: `/media/products/${product}/${colorway}-front.webp`,
+    alt: `${label}, front view, on a wooden hanger`,
+    ...RAIL_CANVAS,
+    origin: "generated",
+    replaceNote: GENERATED_CUTOUT_NOTE,
+  };
+}
+
+assets.push(
+  frontView("heavyweight-tee", "olive", "Heavyweight tee in olive"),
+  frontView("oxford-shirt", "white", "Oxford shirt in white"),
+  frontView("fleece-hoodie", "black", "Fleece hoodie in black"),
+  frontView("pique-polo", "navy", "Piqué polo in navy"),
+  frontView("chore-jacket", "navy", "Chore jacket in navy canvas"),
+  frontView("wool-overcoat", "camel", "Wool overcoat in camel"),
+  frontView("quilted-liner", "olive", "Quilted liner jacket in olive"),
+  frontView("pleated-trouser", "charcoal", "Pleated wool trousers in charcoal, folded over the hanger"),
+  frontView("wide-chino", "stone", "Wide chinos in stone, folded over the hanger"),
+  frontView("linen-camp-shirt", "ecru", "Linen camp shirt in ecru"),
+  frontView("merino-crew", "navy", "Merino crewneck in navy"),
+  frontView("merino-crew", "charcoal", "Merino crewneck in charcoal"),
+  frontView("cashmere-cardigan", "oat", "Cropped cashmere cardigan in oat"),
+  frontView("slip-dress", "ecru", "Silk slip dress in ecru"),
+  frontView("rib-knit-dress", "black", "Rib knit dress in black"),
+  frontView("poplin-shirt-dress", "white", "Poplin shirt dress in white"),
+  frontView("wide-leg-trouser", "black", "Wide-leg trousers in black, folded over the hanger"),
+);
+
 // Campaign frames and fabric close-ups, prepared by scripts/prepare-editorial-images.mjs.
 // Generated with Nano Banana 2.1 using the garment cut-outs above as references,
 // so the clothes match the products. They stand in for a real campaign shoot.

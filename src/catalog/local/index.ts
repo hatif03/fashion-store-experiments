@@ -7,6 +7,9 @@ const categories: Category[] = [
   { id: "shirts", label: "Shirts" },
   { id: "knitwear", label: "Knitwear" },
   { id: "sweats", label: "Sweats" },
+  { id: "outerwear", label: "Outerwear" },
+  { id: "trousers", label: "Trousers" },
+  { id: "dresses", label: "Dresses" },
 ];
 
 const collections: Collection[] = [
@@ -17,6 +20,14 @@ const collections: Collection[] = [
     season: "Autumn–Winter 2026",
     summary: "Eight pieces in bone, ink, moss and rust. Heavy cloth, plain construction, nothing printed on the outside.",
     productIds: ["heavyweight-tee", "mariner-long-sleeve", "oxford-shirt", "lambswool-cardigan", "henley", "fleece-hoodie", "fleece-crew", "pique-polo"],
+  },
+  {
+    id: "collection-02",
+    slug: "collection-02",
+    title: "Collection 02",
+    season: "Winter 2026",
+    summary: "Outerwear, trousers and a first line of dresses, in camel, navy, oat and black. The same heavy cloth, cut for more of the week.",
+    productIds: ["chore-jacket", "wool-overcoat", "quilted-liner", "pleated-trouser", "wide-chino", "linen-camp-shirt", "merino-crew", "cashmere-cardigan", "slip-dress", "rib-knit-dress", "poplin-shirt-dress", "wide-leg-trouser"],
   },
 ];
 
@@ -176,8 +187,10 @@ const settings: StoreSettings = {
     placements: [
       { productId: "heavyweight-tee", colorwayId: "bone" },
       { productId: "mariner-long-sleeve", colorwayId: "ink-stripe" },
+      { productId: "chore-jacket", colorwayId: "navy" },
       { productId: "oxford-shirt", colorwayId: "pale-blue" },
       { productId: "lambswool-cardigan", colorwayId: "moss" },
+      { productId: "slip-dress", colorwayId: "ecru" },
       { productId: "henley", colorwayId: "rust" },
       { productId: "fleece-hoodie", colorwayId: "grey-marl" },
       { productId: "fleece-crew", colorwayId: "oat" },

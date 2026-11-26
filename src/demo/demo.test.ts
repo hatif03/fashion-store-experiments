@@ -12,12 +12,12 @@ beforeEach(() => demoStore.reset());
 describe("the demo catalogue", () => {
   it("starts as the built-in collection plus one draft, with checkout closed", async () => {
     const catalog = await admin();
-    expect(catalog.products.filter((p) => p.status === "active")).toHaveLength(8);
+    expect(catalog.products.filter((p) => p.status === "active")).toHaveLength(20);
     expect(catalog.products.filter((p) => p.status === "draft")).toHaveLength(1);
     const store = demoStore.storefront();
     expect(store.products.map((p) => p.id)).not.toContain("linen-overshirt");
     expect(store.settings.checkout?.enabled).toBe(false);
-    expect(railEntries(store)).toHaveLength(8);
+    expect(railEntries(store)).toHaveLength(10);
   });
 
   it("shows price, stock and rail changes in the storefront", async () => {

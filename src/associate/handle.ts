@@ -17,7 +17,7 @@ function transcriptOf(history: { role: string; content: string }[], message: str
 /**
  * The Luxe associate's shape: classify, answer from the catalogue, then
  * attach the pieces and bag actions the reply referred to. The collection
- * is eight pieces, so the catalogue is the prompt — no vector index.
+ * is twenty pieces, so the catalogue is the prompt — no vector index.
  * History is sent by the browser. Nothing is stored on the server.
  */
 export async function handleAssociate(body: unknown, emit: (event: AssociateEvent) => void | Promise<void>, signal?: AbortSignal): Promise<void> {
