@@ -5,6 +5,7 @@ A luxury fashion store built around an interactive clothing rail: a storefront, 
 - **Set up your own store:** [`docs/SETUP.md`](docs/SETUP.md) (`npm run setup` guides you; about 20 minutes, no code changes)
 - **Deploy your store, or the backend-free showroom:** [`docs/DEPLOY.md`](docs/DEPLOY.md)
 - **How the backend works:** [`docs/BACKEND.md`](docs/BACKEND.md) (schema, security rules, functions, checkout protection)
+- **Experiments (Toggle Wars):** [`docs/HACKATHON-PLAN.md`](docs/HACKATHON-PLAN.md), [`docs/experiments/`](docs/experiments/), [`docs/METRICS.md`](docs/METRICS.md), [`docs/DECISIONS.md`](docs/DECISIONS.md)
 - **Screenshots:** [`docs/screenshots/`](docs/screenshots/) (storefront) and [`docs/screenshots/phase-2/`](docs/screenshots/phase-2/) (dashboard, checkout)
 
 Without Supabase configured, the store runs on its built-in demo collection, with checkout off. With it, products, stock and orders live in your database and are managed at `/admin`.

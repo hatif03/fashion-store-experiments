@@ -4,7 +4,7 @@ Read this file before editing. Skills with the full procedures live in `.agents/
 
 ## What this is
 
-A luxury fashion store: interactive clothing rail, shop, product pages, bag, checkout when Supabase is configured, and a studio associate on every storefront page. The associate is the sales chat, grounded in the eight-piece collection and answered by IFM K2 Horizon. Flagsmith is not integrated yet. The experiment to run, when asked, is in the `flagsmith-experiment` skill.
+A luxury fashion store: interactive clothing rail, shop, product pages, bag, checkout when Supabase is configured, and a studio associate on every storefront page. The associate is the sales chat, grounded in the eight-piece collection and answered by IFM K2 Horizon. Flagsmith is not integrated yet. The experiment to run, when asked, is in the `flagsmith-experiment` skill and `docs/experiments/`.
 
 ## Commands
 
@@ -17,6 +17,10 @@ A luxury fashion store: interactive clothing rail, shop, product pages, bag, che
 ## Secrets
 
 `IFM_API_KEY` is server-only. Never prefix it with `VITE_`, never commit `.env.local`, and never print the key. `flagsmith.env` is gitignored. `VITE_` variables are published in the browser bundle.
+
+## Records
+
+Every change, experiment and decision is written down. The Toggle Wars plan is `docs/HACKATHON-PLAN.md`. Experiments live in `docs/experiments/`, events and KPIs in `docs/METRICS.md`, decisions in `docs/DECISIONS.md`, posts in `docs/TRAFFIC.md`, and store changes in `CHANGELOG.md`. Update the relevant file in the same change.
 
 ## Deploy
 
