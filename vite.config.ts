@@ -24,10 +24,31 @@ function associateDev(): Plugin {
     name: "stillform-associate",
     apply: "serve",
     configureServer(server: ViteDevServer) {
-      const env = loadEnv(server.config.mode, process.cwd(), "IFM_");
+      const env = loadEnv(server.config.mode, process.cwd(), ["IFM_", "EVENTS_"]);
       for (const [key, value] of Object.entries(env)) process.env[key] ??= value;
       server.middlewares.use(async (req: IncomingMessage, res: ServerResponse, next: (error?: unknown) => void) => {
         const path = req.url?.split("?")[0];
+        if (path === "/api/track" || path === "/api/stats") {
+          try {
+            const events = (await server.ssrLoadModule("/src/events/handle.ts")) as typeof import("./src/events/handle");
+            if (path === "/api/track" && req.method === "POST") {
+              res.statusCode = await events.recordEvent(await readBody(req), req.headers, "development");
+              res.end();
+            } else if (path === "/api/stats" && req.method === "GET") {
+              const hours = Number(new URL(req.url ?? "", "http://localhost").searchParams.get("hours"));
+              res.setHeader("Content-Type", "application/json");
+              res.end(JSON.stringify(await events.readSummary(Number.isFinite(hours) ? hours : undefined, "development")));
+            } else {
+              res.statusCode = 405;
+              res.end();
+            }
+          } catch (error) {
+            res.statusCode = 503;
+            res.end();
+            server.config.logger.warn(`event log: ${error instanceof Error ? error.message : "failed"}`);
+          }
+          return;
+        }
         if (path !== "/api/chat") return next();
         if (req.method !== "POST") {
           res.statusCode = 405;

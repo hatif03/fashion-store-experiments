@@ -1,6 +1,8 @@
 {
   "functions": {
-    "api/chat.ts": { "maxDuration": 60 }
+    "api/chat.ts": { "maxDuration": 60 },
+    "api/track.ts": { "maxDuration": 10 },
+    "api/stats.ts": { "maxDuration": 10 }
   },
   "rewrites": [{ "source": "/((?!api/).*)", "destination": "/index.html" }]
 }
