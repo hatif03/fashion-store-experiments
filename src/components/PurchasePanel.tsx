@@ -19,6 +19,19 @@ interface PurchasePanelProps {
   source: "rail_detail" | "product_page";
 }
 
+const CHEST: Record<string, string> = { XS: "84–88", S: "89–94", M: "95–101", L: "102–108", XL: "109–116" };
+const BUST: Record<string, string> = { XS: "78–81", S: "82–86", M: "87–91", L: "92–97" };
+const WOMEN_WAIST: Record<string, string> = { XS: "62–65", S: "66–69", M: "70–74", L: "75–79" };
+
+/** Body measurements in centimetres, by the kind of size the piece uses. */
+function sizeGuide(product: Product, size: string): string {
+  if (/^\d+$/.test(size)) return `Waist ${Math.round(Number(size) * 2.54)} cm`;
+  const womenswear = product.sizes.includes("XS") && !product.sizes.includes("XL");
+  const table = womenswear ? (product.category === "trousers" ? WOMEN_WAIST : BUST) : CHEST;
+  const measure = womenswear ? (product.category === "trousers" ? "Waist" : "Bust") : "Chest";
+  return table[size] ? `${measure} ${table[size]} cm` : "—";
+}
+
 export function PurchasePanel({ product, colorwayId, onColorwayChange, onViewBag, showPrice = true, source }: PurchasePanelProps) {
   const catalog = useCatalog();
   const bag = useBag();
@@ -27,6 +40,7 @@ export function PurchasePanel({ product, colorwayId, onColorwayChange, onViewBag
   const [chosenSize, setSize] = React.useState<string | null>(null);
   const [note, setMessage] = React.useState<{ tone: "error" | "done"; text: string; colorwayId: string } | null>(null);
   const sizeGroup = React.useRef<HTMLFieldSetElement>(null);
+  const [guideOpen, setGuideOpen] = React.useState(false);
 
   // A size chosen in one colourway carries over only if it is in stock in the current one.
   const size = chosenSize && (variantFor(product, colorway.id, chosenSize)?.stock ?? 0) > 0 ? chosenSize : null;
@@ -113,7 +127,34 @@ export function PurchasePanel({ product, colorwayId, onColorwayChange, onViewBag
       </div>
 
       <fieldset ref={sizeGroup} className="flex flex-col gap-3" aria-describedby={`${id}-stock`}>
-        <legend className="label mb-3 text-muted-foreground">Size</legend>
+        <legend className="label mb-3 flex w-full items-baseline justify-between text-muted-foreground">
+          Size
+          <button
+            type="button"
+            aria-expanded={guideOpen}
+            aria-controls={`${id}-guide`}
+            className="label link-draw normal-case tracking-normal text-foreground"
+            onClick={() => {
+              if (!guideOpen) track("size_guide_opened", { productId: product.id });
+              setGuideOpen(!guideOpen);
+            }}
+          >
+            {guideOpen ? "Hide size guide" : "Size guide"}
+          </button>
+        </legend>
+        {guideOpen && (
+          <table id={`${id}-guide`} className="mb-2 w-full text-left text-[13px]">
+            <caption className="sr-only">Body measurements for each size</caption>
+            <tbody className="divide-y divide-border border-y border-border">
+              {product.sizes.map((option) => (
+                <tr key={option}>
+                  <th scope="row" className="tabular w-14 py-2 font-medium">{option}</th>
+                  <td className="tabular py-2 text-muted-foreground">{sizeGuide(product, option)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
         <div className="grid grid-cols-5 gap-1.5">
           {product.sizes.map((option) => {
             const stock = variantFor(product, colorway.id, option)?.stock ?? 0;
