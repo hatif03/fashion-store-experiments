@@ -6,5 +6,6 @@ Full-size originals go here. This folder isn't published; the site uses the opti
 | --- | --- | --- |
 | `assets/editorial-source/` | `node scripts/prepare-editorial-images.mjs` | 640–2048 px WebP copies in `public/media/editorial` |
 | `assets/supplied-originals/` | `node scripts/prepare-supplied-images.mjs` | Rail cut-outs in `public/media/products` |
+| `assets/generated-source/cutouts/` | `node scripts/prepare-generated-cutouts.mjs [--sheet]` | Front-view rail cut-outs from AI-generated photographs, named `<product>__<colourway>.jpg`, scaled by the hanger hook to match the supplied set |
 
 Once your store is connected to Supabase, you don't need either script: photos you upload in the dashboard are prepared in the browser. See `docs/ASSET-PLAN.md` for what to shoot.
