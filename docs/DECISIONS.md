@@ -4,6 +4,18 @@ Newest first. Each entry says what was decided, why, and what it rules out.
 
 ## 2026-11-27
 
+**D-014. A hidden live page shows the real event data.** `/live`, linked from the © line in the footer, shows visitors, countries, cities on an animated world map, the funnel, the rail-vs-grid split, a live feed and traffic sources. It polls every 15 seconds and shows production data only. It gives judges and visitors a way to see the data is real without a Flagsmith login. It isn't linked from the navigation, so it doesn't pull homepage visitors away mid-experiment.
+
+**D-013. We keep our own event log next to Flagsmith.** Flagsmith reads events only for exposed identities inside an experiment, and has no map or store-wide funnel. Each event also goes to a Supabase table through `/api/track`, with country and city from Vercel's headers. Coordinates are rounded to about 10 km, the IP address is never read, and the table can only be reached through two functions, one that inserts and one that returns aggregates. Flagsmith stays the source of truth for the experiment result; the log supports the cross-check and the live page. A free Supabase project was created for it.
+
+**D-012. Our own browsers are excluded with `?internal=1`.** An internal browser never contacts Flagsmith and sends nothing to the event log, so our clicks can't reach production results. `?internal=0` clears it. Headless browsers and scripts are also dropped by the event log.
+
+**D-011. The homepage waits at most 2.5 seconds for its version.** A neutral placeholder shows until flags arrive. On timeout the visitor sees the rail with no exposure recorded, and stays on the rail for the visit. Showing the rail and then switching would flash a version the visitor wasn't assigned to, and recording an exposure for a version they never saw would bias the result.
+
+**D-010. Exposure goes through `getExperimentFlag`, called only on the homepage.** It records an exposure only for identities enrolled in a running experiment, so visitors who never see the homepage are not counted. Flag values elsewhere are read with analytics off. Flagsmith's docs also describe a React `useExperiment` hook; calling the SDK directly keeps the timeout and preview logic in one place.
+
+**D-009. Every product view counts once per product per visit.** Re-opening the same piece in a visit doesn't inflate `product_viewed`, so its count metric measures how many different pieces a visitor looked at.
+
 **D-008. Traffic comes from real posts with UTM links to the homepage.** Channels and timing are in [`HACKATHON-PLAN.md`](HACKATHON-PLAN.md#traffic). Scripted traffic is a disclosed backup that runs only in its own Flagsmith environment, so production results stay real.
 
 **D-007. QA runs in a separate Flagsmith environment.** Experiments are scoped to an environment, so our test clicks cannot reach production results.

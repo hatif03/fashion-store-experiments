@@ -12,9 +12,9 @@ The clothing rail is the brand's signature and its most expensive component: phy
 | --- | --- |
 | Hypothesis | For visitors who land on the homepage of the public showroom during the run window, replacing the interactive rail with a static grid of the same pieces in the same order will lower the share who open at least one product by at least 20% relative. |
 | Flag | `homepage_merchandising`, multivariate. Flag value and control: `rail`. Variation key: `grid` |
-| Exposure | `useExperiment("homepage_merchandising")` on the homepage only, after flags load. A neutral placeholder shows until then |
+| Exposure | `getExperimentFlag("homepage_merchandising")` on the homepage only, after flags load. A neutral placeholder shows until then, for at most 2.5 seconds. If flags haven't loaded by then, the visitor sees the rail with no exposure recorded, and stays on the rail for the rest of the visit so the page never switches under them |
 | Identity | One visitor id in `localStorage`, shared by flags and events |
-| Population | 100% of homepage visitors in the production environment |
+| Population | 100% of homepage visitors in the production environment, except our own browsers marked `?internal=1` and headless browsers |
 | Split | 50 / 50. Not changed after launch |
 | Primary metric | `product_viewed`, occurrence, direction `increase` |
 | Secondary metrics | `piece_added` occurrence (`increase`), `checkout_started` occurrence (`increase`), `order_placed` occurrence (`increase`) and sum of `value` (`increase`) |
@@ -43,13 +43,39 @@ Formula: smallest absolute change ≈ 2.8 × √(2p(1 − p) / n), for base rate
 
 Both versions can produce the event, so the comparison is fair. The `source` metadata records which path it came from.
 
+## The two versions
+
+- **Control, `rail`:** today's homepage. Ten pieces hang on the interactive rail. Pulling one down opens its detail view, which counts as `product_viewed` with source `rail`.
+- **Variant, `grid`:** the same ten pieces in the same order, as product cards in a grid (two columns on phones, five on wide screens). The heading, piece count and everything below the hero are unchanged. Opening a card goes to the product page, which counts as `product_viewed` with source `grid`.
+
+Any version can be seen without being enrolled by adding `?preview=rail` or `?preview=grid` to the homepage address.
+
+## Flagsmith setup
+
+| Item | QA | Production |
+| --- | --- | --- |
+| Environment key | `S7XdcYEJmwHsrATg4CWvgT` | `EtSGzCGxfgVyDbvNSTp8vR` |
+| Feature | `homepage_merchandising` (306276), control `rail`, variation `grid` (option 37513) | Same feature |
+| Metrics | 826 to 832 | 833 to 839, listed in [`../METRICS.md`](../METRICS.md#flagsmith-metrics) |
+| Experiment | 789, running since 03:02 IST, 27 Nov, for verification | 790, created, not started |
+
+Environment keys are public by design: they ship in the browser bundle and only read flags.
+
+### Finding: creating an experiment changes assignments before it starts
+
+Creating experiment 789 in QA immediately published its rollout: a segment `experiment-789-rollout` with a 50/50 split on the feature. Identities got split values straight away, but with no enrolment metadata and no exposures, because the experiment hadn't started. When it started, assignments were drawn again. A visitor seen before the start could switch version at the start.
+
+This doesn't affect production results: experiment 790 has had no public traffic before launch, and our own browsers skip Flagsmith entirely. After the start, the raw flags response carries `metadata.experiment.in_experiment: true`, which is what the SDK uses to decide whether to record an exposure. A sample of 60 new identities in QA got 24 `grid` and 36 `rail`, within what a fair 50/50 coin gives at that size.
+
 ## Setup checklist
 
-- [ ] Warehouse connected in production and QA
-- [ ] Flag created with a key on every variation
-- [ ] Metrics created, names matching [`../METRICS.md`](../METRICS.md) exactly
-- [ ] Experiment created in QA and verified: exposures and every event arrive
-- [ ] Experiment created in production, start time recorded above
+- [x] Warehouse connected in production and QA
+- [x] Flag created with a key on every variation
+- [x] Metrics created, names matching [`../METRICS.md`](../METRICS.md) exactly
+- [x] Experiment created in QA and verified: exposures and every event arrive
+- [ ] Deployed to production with the production environment key, event log verified with real geo
+- [x] Experiment 790 created in production with the same flag, metrics and hypothesis
+- [ ] Experiment 790 started, start time recorded above
 - [ ] Store frozen
 
 ## Run log

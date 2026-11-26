@@ -4,26 +4,39 @@ Both kinds of site are static: the build output can go on any static host. Singl
 
 | | Your store | The showroom (live demo) |
 | --- | --- | --- |
-| **What it is** | A real shop: your catalogue in Supabase, checkout, the Studio at `/admin` | The full storefront, rail, lookbook, product pages and bag on the built-in collection. Checkout shows "This is a preview of the store." and there is no real Studio: the Demo Studio at `/demo/admin` is a simulation on fictional, browser-local data |
+| **What it is** | A real shop: your catalogue in Supabase, checkout, the Studio at `/admin` | The full storefront, rail, lookbook, product pages and bag on the built-in collection. Checkout is a demo: delivery, payment preference and review, with nothing charged and no personal details asked. There is no real Studio: the Demo Studio at `/demo/admin` is a simulation on fictional, browser-local data |
 | **Build command** | `npm run build` | `npm run build:demo` |
 | **Output directory** | `dist` | `dist` |
-| **Environment variables** | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_TURNSTILE_SITE_KEY`, and `IFM_API_KEY` for the associate | `IFM_API_KEY` for the associate. No `VITE_` variables |
+| **Environment variables** | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_TURNSTILE_SITE_KEY`, and `IFM_API_KEY` for the associate | `IFM_API_KEY` for the associate. For experiments and the live page: `VITE_FLAGSMITH_ENVIRONMENT_KEY`, `EVENTS_SUPABASE_URL`, `EVENTS_SUPABASE_KEY`. No other `VITE_` variables |
 | **Needs** | A Supabase project, a Cloudflare Turnstile widget, a domain | Only a domain (or the host's free subdomain) |
 | **Check first** | `npm run preflight` | `npm run preflight -- --demo` |
 
 ## The showroom
 
-`npm run build:demo` builds the store on its built-in 8-piece collection and the images in `public/media`.
+`npm run build:demo` builds the store on its built-in 20-piece collection and the images in `public/media`.
 
-It's backend-free by construction: it reads no `.env` files and blanks every Supabase and Turnstile setting. So it can't connect to a database or take an order, even if such values are on the host by mistake. It leaves the real Studio out: `/admin` shows "not found", with no sign-in and no database calls. In its place the showroom carries the Demo Studio at `/demo/admin`: the same dashboard pages over fictional data kept in the visitor's browser (a **Reset demo** button restores it), which also drives the demo storefront. Nothing is sent anywhere. The bag works and is kept in the visitor's browser.
+It's backend-free by construction: it reads no `.env` files and blanks every Supabase and Turnstile setting. So it can't connect to the store database or take a real order, even if such values are on the host by mistake. The only browser variables it takes from the host are `VITE_FLAGSMITH_ENVIRONMENT_KEY` (Flagsmith's public client key) and `VITE_EVENT_LOG` (set to `off` to stop sending events to `/api/track`). It leaves the real Studio out: `/admin` shows "not found", with no sign-in and no database calls. In its place the showroom carries the Demo Studio at `/demo/admin`: the same dashboard pages over fictional data kept in the visitor's browser (a **Reset demo** button restores it), which also drives the demo storefront. Nothing is sent anywhere. The bag works and is kept in the visitor's browser.
 
 1. Run `npm run preflight -- --demo`. It builds the showroom and checks that the build contains:
    - no Supabase project, key or Turnstile key
    - no real Studio sign-in, and the Demo Studio present
    - every image
    - routing for the host
-2. On the host, create a site from the repository with build command `npm run build:demo` and output directory `dist`. Add no `VITE_` variables. Set `IFM_API_KEY` if the studio associate should answer. It is read only by the `/api/chat` function, never by the browser bundle. Without it the store still loads and the associate says it is not configured.
-3. After deploying, open a product page directly, refresh it, and open `/checkout` and `/admin`. You should see a preview message on `/checkout` and "not found" on `/admin`.
+2. On the host, create a site from the repository with build command `npm run build:demo` and output directory `dist`. Set these variables:
+
+   | Variable | Read by | Value |
+   | --- | --- | --- |
+   | `IFM_API_KEY` | `/api/chat` only | The associate's key. Without it the store still loads and the associate says it is not configured |
+   | `VITE_FLAGSMITH_ENVIRONMENT_KEY` | The browser bundle | The Flagsmith environment key: production for the Production environment, QA for Preview. Without it there are no experiments and every visitor sees the control |
+   | `EVENTS_SUPABASE_URL` | `/api/track`, `/api/stats` | The event-log Supabase project URL |
+   | `EVENTS_SUPABASE_KEY` | `/api/track`, `/api/stats` | That project's publishable key. It can only call `record_event` and `analytics_summary`; never use the secret or `service_role` key |
+
+   Without the two `EVENTS_` variables the store works and events still reach Flagsmith, but `/live` has no data and shows "Reconnecting".
+3. After deploying, open a product page directly, refresh it, and open `/checkout` and `/admin`. You should see "Your bag is empty." on `/checkout` and "not found" on `/admin`. Then open `/live`: the visit you just made should appear within 15 seconds, with your city on the map.
+
+### The event log
+
+The schema is [`supabase/events/001_event_log.sql`](../supabase/events/001_event_log.sql). Run it once in a new Supabase project (SQL editor, or `apply_migration`), then copy the project URL and publishable key into the host. It is separate from the store's own Supabase project. Each row records `VERCEL_ENV`, and `/live` shows production rows only, so preview and local testing never appear there.
 
 `npm run test:showroom` runs the same checks in a browser against the production demo build.
 

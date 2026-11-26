@@ -14,7 +14,7 @@ Adapted from the Luxe sales chat: classify the message, answer from the catalogu
 
 - Greetings and shipping or returns questions are answered from `src/catalog/local` with no model call.
 - Product questions go to `IFM/K2-Horizon-375B-A23B` at `https://api.ifm.ai/v1/chat/completions`. Sampling is temperature `1` and `top_p` `0.95`, with `chat_template_kwargs.reasoning_effort` set to `high`.
-- The whole eight-piece collection is in the prompt. Do not add a vector database.
+- The whole 20-piece collection is in the prompt. Do not add a vector database.
 - The browser sends the last few turns. The server stores nothing. Do not replay `reasoning_content` to the browser or into later turns. Prior turns are pasted into the latest user message as a transcript, which avoids the K2 requirement to replay a reasoning trace.
 - Only content tokens are streamed. Reasoning stays on the server.
 - Piece ids, colourways, and bag SKUs from the model are checked against the catalogue. A sold-out size is not added. Invented ids are dropped.

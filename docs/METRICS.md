@@ -1,11 +1,17 @@
 # Metrics and events
 
-The store sends events to Flagsmith with `trackEvent`, under the same visitor id used for flags. Flagsmith counts an event toward an experiment only after that visitor's first exposure, and only if the name matches the metric's event name exactly (case-sensitive).
+Every event goes to two places from one call, `track()` in [`src/analytics/track.ts`](../src/analytics/track.ts):
+
+1. **Flagsmith**, with `trackEvent`, under the same visitor id used for flags. Flagsmith counts an event toward an experiment only after that visitor's first exposure, and only if the name matches the metric's event name exactly (case-sensitive). This is where experiment results are read.
+2. **Our event log**, through `POST /api/track` into a Supabase table. This feeds the store-wide funnel and the live page at `/live`, which Flagsmith can't show outside an experiment. The function adds the visitor's country and city from Vercel's request headers, with the coordinates rounded to one decimal place (about 10 km). It never reads or stores the IP address. Headless browsers and scripts are dropped by user agent.
+
+Visits marked internal with `?internal=1` (cleared with `?internal=0`) send nothing to either, and never contact Flagsmith. We use this on our own browsers.
 
 ## Identity
 
 - Visitor id: a random id in `localStorage`, created on the first visit. No personal data.
-- Traits set on identify: `utm_source`, `utm_medium`, `utm_campaign`, `landing_path`, `device` (`mobile` or `desktop`).
+- Visit id: a random id in `sessionStorage`, with the landing page, referrer host, UTM tags and device of that visit.
+- Traits set on identify: `utm_source` (falls back to the referrer's host, then `direct`), `utm_medium`, `utm_campaign`, `landing_path`, `device` (`mobile` or `desktop`).
 
 ## Events
 
@@ -13,11 +19,12 @@ The store sends events to Flagsmith with `trackEvent`, under the same visitor id
 
 | Event | Fires when | `value` | Metadata |
 | --- | --- | --- | --- |
-| `product_viewed` | A product page mounts, or a piece is taken down from the rail | Price | `product_id`, `source` (`rail`, `grid`, `shop`, `pairing`, `associate`, `direct`) |
+| `page_viewed` | The route changes. Event log only | — | — |
+| `product_viewed` | A product page mounts, or a piece is taken down from the rail. Once per product per visit | Price | `product_id`, `source` (`rail`, `grid`, `collection`, `shop`, `pairing`, `associate`, `direct`) |
 | `piece_added` | A piece is added to the bag | Price | `product_id`, `source` (`rail_detail`, `product_page`, `associate`) |
 | `bag_opened` | The bag drawer opens | Bag subtotal | — |
 | `checkout_started` | The checkout page opens with items in the bag | Bag subtotal | `items` |
-| `checkout_step_completed` | A checkout step is completed | — | `step` (`delivery`, `review`) |
+| `checkout_step_completed` | A checkout step is completed | — | `step` (`delivery`, `payment`) |
 | `order_placed` | A demo order is placed | Order total | `items` |
 | `associate_opened` | The associate panel opens | — | `page` |
 | `associate_message_sent` | The visitor sends the associate a message | — | `page` |
@@ -27,7 +34,23 @@ The store sends events to Flagsmith with `trackEvent`, under the same visitor id
 | `size_guide_opened` | The size guide opens | — | `product_id` |
 | `pairing_clicked` | A "Complete the look" piece is opened | — | `product_id` |
 
-Exposures are recorded by the SDK (`useExperiment`), not by our code.
+Exposures are recorded by the SDK when the homepage calls `getExperimentFlag("homepage_merchandising")`, and only for identities enrolled in a running experiment. The exposure event's value is the variant key (`control` or `grid`). Our code never sends an exposure itself. The SDK doesn't flush its queue when a tab closes, so the store flushes on `pagehide` and every second.
+
+## Flagsmith metrics
+
+The same seven metrics exist in QA and production. Production ids:
+
+| Id | Name | Event | Aggregation | Expected direction |
+| --- | --- | --- | --- | --- |
+| 833 | Product view rate | `product_viewed` | occurrence | increase |
+| 834 | Add-to-bag rate | `piece_added` | occurrence | increase |
+| 835 | Checkout start rate | `checkout_started` | occurrence | increase |
+| 836 | Conversion rate | `order_placed` | occurrence | increase |
+| 837 | Revenue per visitor | `order_placed` | sum | increase |
+| 838 | Engaged visit rate | `engaged_visit` | occurrence | not decrease |
+| 839 | Products viewed per visitor | `product_viewed` | count | increase |
+
+QA ids are 826 to 832 in the same order.
 
 ## KPIs
 
@@ -44,11 +67,21 @@ Exposures are recorded by the SDK (`useExperiment`), not by our code.
 | Checkout step drop-off | `checkout_step_completed` by `step` | Computed from the counts |
 | Engaged visit rate (inverse of bounce) | `engaged_visit` occurrence | Flagsmith metric |
 | Associate engagement | `associate_opened`, `associate_message_sent` occurrence | Flagsmith metric |
-| Traffic by source, page views, pages per visit | Page views and referrers | Vercel Web Analytics |
+| Traffic by source, country, city, device | `page_viewed` with visit details | Event log, shown on `/live` |
+| Store-wide funnel | Distinct visitors per step | Event log, shown on `/live` |
 
 Demo orders measure purchase intent, not real purchases: nothing is charged, so absolute rates will be higher than in a real store. Comparisons between versions stay fair, because both versions have the same checkout.
 
-## Open questions
+## Answered questions
 
-- Whether one Flagsmith experiment can carry secondary and guardrail metrics alongside the primary. Check during setup; if not, secondary metrics are read from a second scorecard or computed from counts.
-- Whether the managed warehouse lets us export raw events. If not, store-wide funnel numbers outside an experiment need our own event log.
+- **Can one experiment carry secondary and guardrail metrics?** Yes. EXP-001 has all seven metrics attached, with one primary.
+- **Can we export raw events from the managed warehouse?** We didn't depend on it. Our own event log holds the same events with visit details, so store-wide numbers and the frequentist cross-check come from there.
+
+## The event log
+
+Table `public.events` in the Supabase project `stillform-events`. Row-level security is on with no policies, so nobody can read or write the table directly. Two functions are the only way in, both called from our server functions:
+
+- `record_event(p jsonb)` validates and inserts one event. At most 300 events per visitor per 10 minutes.
+- `analytics_summary(p_hours, p_environment)` returns aggregates only: totals, funnel, countries, cities, recent events, sources, devices, the experiment split, top products and visitors per hour. No visitor ids leave the database.
+
+Each row records `VERCEL_ENV` (`production`, `preview` or `development`). The live page and the analysis read production only, so local and preview testing never mixes in. The schema is [`supabase/events/001_event_log.sql`](../supabase/events/001_event_log.sql).

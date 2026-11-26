@@ -30,7 +30,8 @@ async function demo() {
   console.log("\nPreflight for the showroom (npm run build:demo)");
   const out = mkdtempSync(join(tmpdir(), "stillform-demo-"));
   try {
-    execFileSync("npx", ["vite", "build", "--mode", "demo", "--outDir", out, "--emptyOutDir"], { stdio: ["ignore", "ignore", "pipe"] });
+    // Vite's entry run with this Node: Windows can't spawn npx without a shell.
+    execFileSync(process.execPath, ["node_modules/vite/bin/vite.js", "build", "--mode", "demo", "--outDir", out, "--emptyOutDir"], { stdio: ["ignore", "ignore", "pipe"] });
     check("the demo build succeeds", existsSync(join(out, "index.html")));
     const js = readdirSync(join(out, "assets")).filter((f) => f.endsWith(".js")).map((f) => readFileSync(join(out, "assets", f), "utf8")).join("\n");
     check("no Supabase project, key or token in the build", !/[a-z0-9]{20}\.supabase\.co|sb_(publishable|secret)_|eyJ[A-Za-z0-9_-]{15,}\.eyJ/.test(js), "Build with npm run build:demo, which ignores backend settings.");
