@@ -14,6 +14,10 @@ Open `?internal=1` once. That browser stays out of the result until `?internal=0
 | Control | https://stillform-sepia.vercel.app/?internal=1&preview=rail |
 | The other version | https://stillform-sepia.vercel.app/?internal=1&preview=grid |
 | Live map | https://stillform-sepia.vercel.app/live?internal=1 |
+| A suggested size | https://stillform-sepia.vercel.app/products/heavyweight-tee?internal=1&preview.size_suggestion=suggested |
+| Complete the look removed | https://stillform-sepia.vercel.app/products/heavyweight-tee?internal=1&preview.complete_the_look=hidden |
+| The associate speaks | https://stillform-sepia.vercel.app/products/heavyweight-tee?internal=1&preview.associate_greeting=speaks |
+| The phone bar adds | https://stillform-sepia.vercel.app/products/heavyweight-tee?internal=1&preview.buy_bar=adds |
 
 ## Links to post
 

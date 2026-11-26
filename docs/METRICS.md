@@ -21,7 +21,7 @@ Visits marked internal with `?internal=1` (cleared with `?internal=0`) send noth
 | --- | --- | --- | --- |
 | `page_viewed` | The route changes. Event log only | — | — |
 | `product_viewed` | A product page mounts, or a piece is taken down from the rail. Once per product per visit | Price | `product_id`, `source` (`rail`, `grid`, `collection`, `shop`, `pairing`, `associate`, `direct`) |
-| `piece_added` | A piece is added to the bag | Price | `product_id`, `source` (`rail_detail`, `product_page`, `associate`) |
+| `piece_added` | A piece is added to the bag | Price | `product_id`, `source` (`rail_detail`, `product_page`, `associate`, `buy_bar`) |
 | `bag_opened` | The bag drawer opens | Bag subtotal | — |
 | `checkout_started` | The checkout page opens with items in the bag | Bag subtotal | `items` |
 | `checkout_step_completed` | A checkout step is completed | — | `step` (`delivery`, `payment`) |

@@ -1,9 +1,10 @@
 import * as React from "react";
-import { Link } from "react-router";
-import { dollars, track } from "@/analytics/track";
+import { Link, useLocation } from "react-router";
+import { GREETING_EXPERIMENT, dollars, track } from "@/analytics/track";
+import { useExperimentValue } from "@/analytics/flagsmith";
 import { useBag } from "@/bag/BagProvider";
 import { useCatalog } from "@/catalog/CatalogProvider";
-import { colorwayOf, formatPrice, productById, productPath, variantBySku } from "@/catalog/selectors";
+import { colorwayOf, formatPrice, productById, productBySlug, productPath, variantBySku } from "@/catalog/selectors";
 import type { Product } from "@/catalog/types";
 import { GarmentImage } from "./GarmentImage";
 import { useFocusTrap } from "@/lib/hooks";
@@ -79,7 +80,9 @@ function Compare({ pieces }: { pieces: PieceRef[] }) {
 export function SalesAssociate() {
   const catalog = useCatalog();
   const bag = useBag();
+  const location = useLocation();
   const [open, setOpen] = React.useState(false);
+  const [prompted, setPrompted] = React.useState(false);
   const [input, setInput] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [turns, setTurns] = React.useState<Turn[]>([]);
@@ -87,12 +90,37 @@ export function SalesAssociate() {
   const scroller = React.useRef<HTMLDivElement>(null);
   const field = React.useRef<HTMLTextAreaElement>(null);
   const session = React.useRef("");
+  const openedFor = React.useRef("");
+  const [due, setDue] = React.useState(false);
+  const onProduct = location.pathname.startsWith("/products/");
+  const slug = onProduct ? location.pathname.split("/")[2] ?? "" : "";
+  const pageProduct = slug ? productBySlug(catalog, decodeURIComponent(slug)) : undefined;
+  const greeting = useExperimentValue(GREETING_EXPERIMENT, "silent", 2500, onProduct && due);
 
   const currentSession = () => {
     if (!session.current) session.current = sessionId();
     return session.current;
   };
   useFocusTrap(panel, open, () => setOpen(false));
+
+  React.useEffect(() => {
+    if (!onProduct) {
+      setDue(false);
+      return;
+    }
+    const timer = window.setTimeout(() => setDue(true), 8000);
+    return () => {
+      window.clearTimeout(timer);
+      setDue(false);
+    };
+  }, [onProduct, location.pathname]);
+
+  React.useEffect(() => {
+    if (greeting !== "speaks" || !pageProduct || openedFor.current === location.pathname) return;
+    openedFor.current = location.pathname;
+    setPrompted(true);
+    setOpen(true);
+  }, [greeting, pageProduct, location.pathname]);
 
   React.useEffect(() => {
     const node = scroller.current;
@@ -180,7 +208,7 @@ export function SalesAssociate() {
           id="studio-associate"
           role="dialog"
           aria-label="Studio associate"
-          className="fixed bottom-20 right-5 z-50 flex w-[min(24rem,calc(100vw-2.5rem))] flex-col border border-border bg-card text-card-foreground shadow-[0_24px_80px_rgb(18_17_16/0.16)]"
+          className="fixed bottom-20 right-5 z-50 flex w-[min(24rem,calc(100vw-2.5rem))] flex-col border border-border bg-card text-card-foreground shadow-[0_24px_80px_rgb(18_17_16/0.16)] max-md:[html[data-buybar]_&]:bottom-40"
           style={{ height: "min(34rem, calc(100dvh - 7.5rem))" }}
         >
           <div className="flex items-baseline justify-between border-b border-border px-4 py-3">
@@ -193,8 +221,17 @@ export function SalesAssociate() {
             </button>
           </div>
           <div ref={scroller} className="flex flex-1 flex-col gap-4 overflow-y-auto px-4 py-4">
-            <p className="text-[14px] leading-relaxed text-muted-foreground">{WELCOME}</p>
-            {turns.length === 0 && (
+            {prompted && pageProduct ? (
+              <p className="text-[14px] leading-relaxed">{`The ${pageProduct.name} is in front of you. What should I tell you about it?`}</p>
+            ) : (
+              <p className="text-[14px] leading-relaxed text-muted-foreground">{WELCOME}</p>
+            )}
+            {turns.length === 0 && prompted && pageProduct && (
+              <button type="button" className="self-start border border-border px-3 py-2 text-left text-[13px] hover:border-foreground" onClick={() => void send(`How does the ${pageProduct.name} fit?`)}>
+                {`How does the ${pageProduct.name} fit?`}
+              </button>
+            )}
+            {turns.length === 0 && !prompted && (
               <div className="flex flex-col items-start gap-2">
                 {SUGGESTIONS.map((suggestion) => (
                   <button key={suggestion} type="button" className="border border-border px-3 py-2 text-left text-[13px] hover:border-foreground" onClick={() => void send(suggestion)}>

@@ -5,6 +5,7 @@ import { useBag } from "@/bag/BagProvider";
 import { useCatalog } from "@/catalog/CatalogProvider";
 import { colorwayOf, colorwayStock, formatPrice, productPath, stockLevel, variantFor } from "@/catalog/selectors";
 import type { Product } from "@/catalog/types";
+import { suggestedSize } from "./suggestedSize";
 
 interface PurchasePanelProps {
   product: Product;
@@ -16,7 +17,11 @@ interface PurchasePanelProps {
   /** Hide the price line when the surrounding layout already shows it. */
   showPrice?: boolean;
   /** Where the add happened, for piece_added. */
-  source: "rail_detail" | "product_page";
+  source: "rail_detail" | "product_page" | "buy_bar";
+  /** `suggested` starts on the middle in-stock size. `null` while the flag is loading. */
+  sizeMode?: "choose" | "suggested" | null;
+  /** The size currently selected, so the phone buy bar can add it. */
+  onSizeChange?: (size: string | null) => void;
 }
 
 const CHEST: Record<string, string> = { XS: "84–88", S: "89–94", M: "95–101", L: "102–108", XL: "109–116" };
@@ -32,7 +37,7 @@ function sizeGuide(product: Product, size: string): string {
   return table[size] ? `${measure} ${table[size]} cm` : "—";
 }
 
-export function PurchasePanel({ product, colorwayId, onColorwayChange, onViewBag, showPrice = true, source }: PurchasePanelProps) {
+export function PurchasePanel({ product, colorwayId, onColorwayChange, onViewBag, showPrice = true, source, sizeMode = "choose", onSizeChange }: PurchasePanelProps) {
   const catalog = useCatalog();
   const bag = useBag();
   const id = React.useId();
@@ -45,6 +50,20 @@ export function PurchasePanel({ product, colorwayId, onColorwayChange, onViewBag
   // A size chosen in one colourway carries over only if it is in stock in the current one.
   const size = chosenSize && (variantFor(product, colorway.id, chosenSize)?.stock ?? 0) > 0 ? chosenSize : null;
   const message = note?.colorwayId === colorway.id ? note : null;
+  const suggestion = sizeMode === "suggested" ? suggestedSize(product.sizes, (option) => (variantFor(product, colorway.id, option)?.stock ?? 0) > 0) : null;
+
+  React.useEffect(() => {
+    onSizeChange?.(size);
+  }, [size, onSizeChange]);
+
+  // A suggestion fills an empty selection. A size the visitor already chose stays.
+  React.useEffect(() => {
+    if (!suggestion) return;
+    setSize((current) => {
+      const usable = Boolean(current && (variantFor(product, colorway.id, current)?.stock ?? 0) > 0);
+      return usable ? current : suggestion;
+    });
+  }, [suggestion, colorway.id, product]);
 
   const variant = size ? variantFor(product, colorway.id, size) : undefined;
   const inBag = variant ? (bag.lines.find((line) => line.sku === variant.sku)?.quantity ?? 0) : 0;
@@ -128,7 +147,7 @@ export function PurchasePanel({ product, colorwayId, onColorwayChange, onViewBag
 
       <fieldset ref={sizeGroup} className="flex flex-col gap-3" aria-describedby={`${id}-stock`}>
         <legend className="label mb-3 flex w-full items-baseline justify-between text-muted-foreground">
-          Size
+          {suggestion && size === suggestion ? `Size — suggested ${suggestion}` : "Size"}
           <button
             type="button"
             aria-expanded={guideOpen}

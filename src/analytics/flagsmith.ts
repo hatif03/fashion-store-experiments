@@ -96,6 +96,35 @@ export function assignedVariant(feature: string): string | null {
   }
 }
 
+/** Every flag this browser has been exposed to. Keys stay inside the event-log's metadata rules. */
+export function assignedFlags(): Record<string, string> {
+  const out: Record<string, string> = {};
+  try {
+    for (let index = 0; index < window.localStorage.length; index++) {
+      const key = window.localStorage.key(index);
+      if (!key?.startsWith(ASSIGNED_PREFIX)) continue;
+      const name = `flag_${key.slice(ASSIGNED_PREFIX.length)}`;
+      const value = window.localStorage.getItem(key);
+      if (/^[a-z_]{1,32}$/.test(name) && value) out[name] = value.slice(0, 80);
+    }
+  } catch {
+    // Storage unavailable: events still go out, without the variant tags.
+  }
+  return out;
+}
+
+/**
+ * `?preview=<value>` is the homepage hero, so the existing reviewer links keep
+ * working. Any other flag uses `?preview.<flag>=<value>`.
+ */
+function previewFor(feature: string): string | null {
+  const params = new URLSearchParams(window.location.search);
+  const named = params.get(`preview.${feature}`);
+  if (named) return named;
+  if (feature === "homepage_merchandising") return params.get("preview");
+  return null;
+}
+
 /**
  * The value of an experiment flag, decided once for this page view.
  *
@@ -104,15 +133,19 @@ export function assignedVariant(feature: string): string | null {
  * records the exposure (only if this identity is enrolled). When they do not
  * arrive within `timeoutMs`, the control is shown with no exposure, and the
  * rest of the session stays on the control so nobody sees both versions.
- * `?preview=<value>` shows a version without enrolling anyone.
+ * `?preview=<value>` shows the homepage hero without enrolling anyone.
+ * `?preview.<flag>=<value>` does the same for any other flag.
+ * Pass `enroll` false until the feature is actually on screen: the hook then
+ * returns the control and records nothing.
  */
-export function useExperimentValue(feature: string, control: string, timeoutMs = 2500): string | null {
+export function useExperimentValue(feature: string, control: string, timeoutMs = 2500, enroll = true): string | null {
   const current = useFlagsmithStatus();
   const [timedOut, setTimedOut] = React.useState(false);
   const decided = React.useRef<string | null>(null);
+  const preview = typeof window === "undefined" ? null : previewFor(feature);
+  const active = enroll || preview !== null;
 
-  if (decided.current === null) {
-    const preview = new URLSearchParams(window.location.search).get("preview");
+  if (active && decided.current === null) {
     if (preview) decided.current = preview;
     else if (readSession(FALLBACK_PREFIX + feature)) decided.current = control;
     else if (current === "off" || current === "failed") decided.current = control;
@@ -125,20 +158,27 @@ export function useExperimentValue(feature: string, control: string, timeoutMs =
   const value = decided.current;
 
   React.useEffect(() => {
-    if (value !== null) return;
+    if (!active || value !== null) return;
     const timer = window.setTimeout(() => setTimedOut(true), timeoutMs);
     return () => window.clearTimeout(timer);
-  }, [value, timeoutMs]);
+  }, [active, value, timeoutMs]);
 
   // Exposure is recorded after the version is on screen, once per mount.
   const exposed = React.useRef(false);
   React.useEffect(() => {
-    if (value === null || exposed.current || current !== "ready") return;
-    if (new URLSearchParams(window.location.search).get("preview") || readSession(FALLBACK_PREFIX + feature)) return;
+    if (!enroll || value === null || exposed.current || current !== "ready") return;
+    if (preview || readSession(FALLBACK_PREFIX + feature)) return;
     exposed.current = true;
-    const flag = flagsmith.getExperimentFlag(feature);
+    let flag: { value?: unknown; experiment?: { inExperiment?: boolean } } | undefined;
+    try {
+      flag = flagsmith.getExperimentFlag(feature) as typeof flag;
+    } catch {
+      return;
+    }
     if (flag?.experiment?.inExperiment) writeStore(window.localStorage, ASSIGNED_PREFIX + feature, String(flag.value));
-  }, [value, current, feature]);
+  }, [enroll, value, current, feature, preview]);
 
+  if (preview) return preview;
+  if (!enroll) return control;
   return value;
 }

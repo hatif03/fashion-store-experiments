@@ -1,4 +1,4 @@
-import { assignedVariant, sendFlagsmithEvent } from "./flagsmith";
+import { assignedFlags, assignedVariant, sendFlagsmithEvent } from "./flagsmith";
 import { currentVisit, isInternal, visitorId } from "./visitor";
 
 /** Every event the store records. docs/METRICS.md defines each one; keep the two in step. */
@@ -27,6 +27,10 @@ export interface TrackOptions {
 
 /** The experiment whose variant is attached to every event in our own log. */
 export const HOMEPAGE_EXPERIMENT = "homepage_merchandising";
+export const SIZE_EXPERIMENT = "size_suggestion";
+export const LOOK_EXPERIMENT = "complete_the_look";
+export const GREETING_EXPERIMENT = "associate_greeting";
+export const BUY_BAR_EXPERIMENT = "buy_bar";
 
 const EVENT_LOG_URL = "/api/track";
 const eventLogEnabled = import.meta.env.VITE_EVENT_LOG !== "off";
@@ -62,7 +66,7 @@ export function track(event: EventName, { value, productId, metadata = {} }: Tra
       campaign: visit.utmCampaign,
       referrer: visit.referrerHost,
       device: visit.device,
-      metadata,
+      metadata: { ...assignedFlags(), ...metadata },
     });
   } catch {
     // Analytics must never break the store.

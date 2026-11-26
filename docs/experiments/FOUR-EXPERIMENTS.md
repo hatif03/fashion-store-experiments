@@ -1,6 +1,6 @@
 # Five experiments
 
-A plan only. Nothing here is built, and nothing here changes [EXP-001](EXP-001-homepage-merchandising.md), which is already running and frozen.
+Built. EXP-001 is running in production. EXP-002 to EXP-005 are running in QA. Production for those four is created only after this code is deployed, then started. Nothing here changes the homepage hero.
 
 Each experiment is one feature, one flag, one primary metric. Five flags can run at once: Flagsmith allows one active experiment per flag, not one per project. The same visitor id is used everywhere, so a person can be in all five. Assignment is independent. That keeps each comparison fair, and it adds noise, which the power section accounts for.
 

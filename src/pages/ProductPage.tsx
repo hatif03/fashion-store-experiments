@@ -1,8 +1,10 @@
 import * as React from "react";
 import { Link, useLocation, useParams, useSearchParams } from "react-router";
-import { dollars, track, trackProductView, type ViewSource } from "@/analytics/track";
+import { BUY_BAR_EXPERIMENT, LOOK_EXPERIMENT, SIZE_EXPERIMENT, dollars, track, trackProductView, type ViewSource } from "@/analytics/track";
+import { useExperimentValue } from "@/analytics/flagsmith";
+import { useBag } from "@/bag/BagProvider";
 import { useCatalog } from "@/catalog/CatalogProvider";
-import { activeProducts, colorwayOf, formatPrice, productById, productBySlug } from "@/catalog/selectors";
+import { activeProducts, colorwayOf, formatPrice, productById, productBySlug, variantFor } from "@/catalog/selectors";
 import type { Catalog, Look, Product } from "@/catalog/types";
 import { AssetSlot } from "@/components/AssetSlot";
 import { GarmentImage } from "@/components/GarmentImage";
@@ -37,6 +39,10 @@ export default function ProductPage() {
   const [slide, setSlide] = React.useState(0);
   const strip = React.useRef<HTMLDivElement>(null);
   const purchase = React.useRef<HTMLDivElement>(null);
+  const [chosenSize, setChosenSize] = React.useState<string | null>(null);
+  const sizeMode = useExperimentValue(SIZE_EXPERIMENT, "choose");
+  const companionsReady = Boolean(product && (product.pairsWith?.length || lookFor(catalog, product.id)));
+  const look = useExperimentValue(LOOK_EXPERIMENT, "shown", 2500, companionsReady);
 
   // A new product or colourway starts the gallery from the front view; the scroll handler updates the counter.
   React.useEffect(() => {
@@ -126,7 +132,7 @@ export default function ProductPage() {
             </div>
             <p className="max-w-[46ch] text-[15px] leading-relaxed text-muted-foreground">{product.description}</p>
             <div ref={purchase}>
-              <PurchasePanel product={product} colorwayId={colorway.id} showPrice={false} source="product_page" onColorwayChange={(id) => setParams(id === product.colorways[0]?.id ? {} : { colour: id }, { replace: true })} />
+              <PurchasePanel product={product} colorwayId={colorway.id} showPrice={false} source="product_page" sizeMode={sizeMode === "suggested" ? "suggested" : sizeMode === null ? null : "choose"} onSizeChange={setChosenSize} onColorwayChange={(id) => setParams(id === product.colorways[0]?.id ? {} : { colour: id }, { replace: true })} />
             </div>
             <div className="border-t border-border">
               {accordions.map((section) => (
@@ -171,6 +177,7 @@ export default function ProductPage() {
         </section>
       )}
 
+      {(!companionsReady || look === "shown") && (
       <section aria-labelledby="pairs-title" className="border-t border-border">
         <div className="mx-auto max-w-[1600px] px-4 py-20 sm:px-6 md:py-28 lg:px-10">
           <div className="mb-10 flex flex-col gap-3 md:mb-14 md:flex-row md:items-end md:justify-between">
@@ -200,16 +207,26 @@ export default function ProductPage() {
           </ul>
         </div>
       </section>
+      )}
 
-      <BuyBar product={product} target={purchase} />
+      <BuyBar product={product} colorwayId={colorway.id} size={chosenSize} target={purchase} />
     </article>
   );
 }
 
-/** Phones only: keeps size selection one tap away once the purchase panel scrolls out of view. */
-function BuyBar({ product, target }: { product: Product; target: React.RefObject<HTMLDivElement | null> }) {
+/** Phones only. The control scrolls back to the sizes. The variation adds the size already chosen. */
+function BuyBar({ product, colorwayId, size, target }: { product: Product; colorwayId: string; size: string | null; target: React.RefObject<HTMLDivElement | null> }) {
   const catalog = useCatalog();
+  const bag = useBag();
   const [visible, setVisible] = React.useState(false);
+  const [phone, setPhone] = React.useState(false);
+  React.useEffect(() => {
+    const query = window.matchMedia("(max-width: 767px)");
+    const apply = () => setPhone(query.matches);
+    apply();
+    query.addEventListener("change", apply);
+    return () => query.removeEventListener("change", apply);
+  }, []);
   React.useEffect(() => {
     const node = target.current;
     if (!node) return;
@@ -217,33 +234,42 @@ function BuyBar({ product, target }: { product: Product; target: React.RefObject
     observer.observe(node);
     return () => observer.disconnect();
   }, [target]);
-  // The associate's floating button moves up while the bar is showing, so it never covers "Choose a size".
+  const mode = useExperimentValue(BUY_BAR_EXPERIMENT, "return", 2500, visible && phone);
+  const variant = size ? variantFor(product, colorwayId, size) : undefined;
+  const inBag = variant ? (bag.lines.find((line) => line.sku === variant.sku)?.quantity ?? 0) : 0;
+  const canAdd = mode === "adds" && Boolean(variant && variant.stock - inBag > 0);
+  // The associate's floating button moves up while the bar is showing, so it never covers the button.
   React.useEffect(() => {
-    if (visible) document.documentElement.dataset.buybar = "";
+    if (visible && phone) document.documentElement.dataset.buybar = "";
     else delete document.documentElement.dataset.buybar;
     return () => {
       delete document.documentElement.dataset.buybar;
     };
-  }, [visible]);
+  }, [visible, phone]);
   return (
     <div
-      inert={!visible}
+      inert={!visible || !phone}
       className={`fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md transition-[translate,visibility] duration-500 ease-(--ease-settle) motion-reduce:transition-none md:hidden ${visible ? "visible translate-y-0" : "invisible translate-y-full"}`}
     >
       <div className="flex items-center justify-between gap-4">
         <div className="min-w-0">
           <p className="truncate text-[14px] font-medium">{product.name}</p>
-          <p className="tabular text-[13px] text-muted-foreground">{formatPrice(catalog, product.price)}</p>
+          <p className="tabular text-[13px] text-muted-foreground">{canAdd ? `Size ${size}` : formatPrice(catalog, product.price)}</p>
         </div>
         <button
           type="button"
           className="h-11 shrink-0 bg-foreground px-5 text-[13px] font-medium tracking-[0.06em] text-background"
           onClick={() => {
+            if (canAdd && variant) {
+              bag.dispatch({ type: "add", sku: variant.sku });
+              track("piece_added", { value: dollars(product.price), productId: product.id, metadata: { source: "buy_bar", size: variant.size, colorway: colorwayId } });
+              return;
+            }
             target.current?.scrollIntoView({ behavior: "smooth", block: "center" });
             target.current?.querySelector<HTMLInputElement>("input:not(:disabled)")?.focus({ preventScroll: true });
           }}
         >
-          Choose a size
+          {canAdd ? "Add to bag" : "Choose a size"}
         </button>
       </div>
     </div>

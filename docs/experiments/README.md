@@ -20,7 +20,7 @@ Every experiment on STILLFORM runs on Flagsmith Experimentation: a multivariate 
 | Id | Question | Status | Result |
 | --- | --- | --- | --- |
 | [EXP-001](EXP-001-homepage-merchandising.md) | Does the interactive rail get more visitors into products than a static grid? | Running since 04:22 IST, 27 Nov | — |
-| [EXP-002](FOUR-EXPERIMENTS.md) | Does a suggested size get more pieces into the bag? | Planned, not built | — |
-| [EXP-003](FOUR-EXPERIMENTS.md) | Does Complete the look get people to open more pieces? | Planned, not built | — |
-| [EXP-004](FOUR-EXPERIMENTS.md) | Does the associate starting the conversation get more replies? | Planned, not built | — |
-| [EXP-005](FOUR-EXPERIMENTS.md) | On a phone, does a buy bar that adds the chosen size get more pieces into the bag? | Planned, not built | — |
+| [EXP-002](EXP-002-suggested-size.md) | Does a suggested size get more pieces into the bag? | Running in QA (846) | — |
+| [EXP-003](EXP-003-complete-the-look.md) | Does Complete the look get people to open more pieces? | Running in QA (847) | — |
+| [EXP-004](EXP-004-associate-greeting.md) | Does the associate starting the conversation get more replies? | Running in QA (848) | — |
+| [EXP-005](EXP-005-buy-bar.md) | On a phone, does a buy bar that adds the chosen size get more pieces into the bag? | Running in QA (849) | — |
