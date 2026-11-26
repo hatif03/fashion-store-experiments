@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Outlet, ScrollRestoration, useLocation } from "react-router";
+import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 import { BagDrawer } from "@/components/BagDrawer";
 import { SalesAssociate } from "@/components/SalesAssociate";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -17,6 +18,7 @@ function useHashScroll() {
 
 export function Layout() {
   useHashScroll();
+  usePageAnalytics();
   return (
     <>
       <a href="#main" className="label sr-only z-[70] bg-foreground px-4 py-3 text-background focus:not-sr-only focus:fixed focus:left-4 focus:top-4">

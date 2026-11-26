@@ -84,6 +84,10 @@ const SHOWROOM = {
   "import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY": '""',
   "import.meta.env.VITE_TURNSTILE_SITE_KEY": '""',
   "import.meta.env.VITE_STUDIO_ENABLED": '"false"',
+  // The Flagsmith client key is public by design. It comes from the host's
+  // environment, since this build reads no .env file.
+  "import.meta.env.VITE_FLAGSMITH_ENVIRONMENT_KEY": JSON.stringify(process.env.VITE_FLAGSMITH_ENVIRONMENT_KEY ?? ""),
+  "import.meta.env.VITE_EVENT_LOG": JSON.stringify(process.env.VITE_EVENT_LOG ?? ""),
   // The simulated Studio at /demo/admin exists only in this build.
   __DEMO_DASHBOARD__: "true",
 };

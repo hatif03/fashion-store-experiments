@@ -1,5 +1,6 @@
 import * as React from "react";
-import { Link, useParams, useSearchParams } from "react-router";
+import { Link, useLocation, useParams, useSearchParams } from "react-router";
+import { dollars, track, trackProductView, type ViewSource } from "@/analytics/track";
 import { useCatalog } from "@/catalog/CatalogProvider";
 import { activeProducts, colorwayOf, formatPrice, productById, productBySlug } from "@/catalog/selectors";
 import type { Catalog, Look, Product } from "@/catalog/types";
@@ -29,6 +30,7 @@ export default function ProductPage() {
   const catalog = useCatalog();
   const { slug = "" } = useParams();
   const [params, setParams] = useSearchParams();
+  const location = useLocation();
   const product = productBySlug(catalog, slug);
   const colorway = product ? colorwayOf(product, params.get("colour")) : null;
   useDocumentTitle(product && colorway ? `${product.name}, ${colorway.name} — ${catalog.settings.name}` : `Not found — ${catalog.settings.name}`);
@@ -40,6 +42,11 @@ export default function ProductPage() {
   React.useEffect(() => {
     strip.current?.scrollTo({ left: 0 });
   }, [slug, colorway?.id]);
+
+  const viewSource = (location.state as { source?: ViewSource } | null)?.source ?? "direct";
+  React.useEffect(() => {
+    if (product) trackProductView(product.id, dollars(product.price), viewSource);
+  }, [product, viewSource]);
 
   if (!product || !colorway) return <NotFoundPage />;
 
@@ -119,7 +126,7 @@ export default function ProductPage() {
             </div>
             <p className="max-w-[46ch] text-[15px] leading-relaxed text-muted-foreground">{product.description}</p>
             <div ref={purchase}>
-              <PurchasePanel product={product} colorwayId={colorway.id} showPrice={false} onColorwayChange={(id) => setParams(id === product.colorways[0]?.id ? {} : { colour: id }, { replace: true })} />
+              <PurchasePanel product={product} colorwayId={colorway.id} showPrice={false} source="product_page" onColorwayChange={(id) => setParams(id === product.colorways[0]?.id ? {} : { colour: id }, { replace: true })} />
             </div>
             <div className="border-t border-border">
               {accordions.map((section) => (
@@ -182,7 +189,12 @@ export default function ProductPage() {
           <ul className="grid gap-x-5 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
             {(companions.length ? companions : fallback).map((candidate) => (
               <li key={candidate.id}>
-                <ProductCard product={candidate} colorwayId={partnerColour(candidate.id)} />
+                <ProductCard
+                  product={candidate}
+                  colorwayId={partnerColour(candidate.id)}
+                  source="pairing"
+                  onOpen={() => track("pairing_clicked", { productId: candidate.id, metadata: { from: product.id } })}
+                />
               </li>
             ))}
           </ul>

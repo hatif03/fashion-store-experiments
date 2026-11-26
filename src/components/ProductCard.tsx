@@ -1,15 +1,16 @@
 import { Link } from "react-router";
+import type { ViewSource } from "@/analytics/track";
 import { useCatalog } from "@/catalog/CatalogProvider";
 import { colorwayOf, formatPrice, productPath } from "@/catalog/selectors";
 import type { Product } from "@/catalog/types";
 import { GarmentImage } from "./GarmentImage";
 
 /** Product tile: the piece hangs on bone; hover turns it to show the back. */
-export function ProductCard({ product, colorwayId, size = "regular", className = "" }: { product: Product; colorwayId?: string; size?: "regular" | "feature"; className?: string }) {
+export function ProductCard({ product, colorwayId, size = "regular", className = "", source, onOpen }: { product: Product; colorwayId?: string; size?: "regular" | "feature"; className?: string; source?: ViewSource; onOpen?: () => void }) {
   const catalog = useCatalog();
   const colorway = colorwayOf(product, colorwayId);
   return (
-    <Link to={productPath(product, colorway.id)} className={`group flex flex-col gap-4 outline-none ${className}`}>
+    <Link to={productPath(product, colorway.id)} state={source ? { source } : undefined} onClick={onOpen} className={`group flex flex-col gap-4 outline-none ${className}`}>
       <div className={`tone-bone relative overflow-hidden ${size === "feature" ? "aspect-[4/5] md:aspect-[5/4]" : "aspect-[4/5]"} group-focus-visible:outline group-focus-visible:outline-[1.5px] group-focus-visible:outline-offset-4 group-focus-visible:outline-ring`}>
         <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[22%] bg-gradient-to-b from-transparent to-black/[0.045]" />
         <div className={`absolute inset-x-0 bottom-[4%] top-[7%] transition-transform duration-[1200ms] ease-(--ease-settle) group-hover:scale-[1.025] motion-reduce:transition-none`}>

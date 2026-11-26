@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Link } from "react-router";
+import { dollars, trackProductView } from "@/analytics/track";
 import { useCatalog } from "@/catalog/CatalogProvider";
 import { formatPrice, productPath, railEntries } from "@/catalog/selectors";
 import { PurchasePanel } from "@/components/PurchasePanel";
@@ -53,6 +54,10 @@ export function RailHero() {
       aria-label={rail.heading}
       autoplay={rail.autoplay}
       maxHeight={maxHeight}
+      onOpenChange={(index) => {
+        const entry = index === null ? undefined : entries[index];
+        if (entry) trackProductView(entry.product.id, dollars(entry.product.price), "rail");
+      }}
       labels={{ front: "Front", back: "Back", close: "Back to the rail", show: "Show" }}
       className="flex flex-col pt-16 md:min-h-[100svh] md:justify-center"
       backdrop={<StudioLight />}
@@ -96,7 +101,7 @@ export function RailHero() {
               <button type="button" onClick={context.open} className="label link-draw py-1">
                 Take it down
               </button>
-              <Link to={productPath(entry.product, entry.colorwayId)} className="label py-1 text-muted-foreground hover:text-foreground">
+              <Link to={productPath(entry.product, entry.colorwayId)} state={{ source: "rail" }} className="label py-1 text-muted-foreground hover:text-foreground">
                 Details
               </Link>
             </div>
@@ -128,8 +133,8 @@ export function RailHero() {
                 </button>
               ))}
             </div>}
-            <PurchasePanel product={entry.product} colorwayId={entry.colorwayId} onViewBag={context.close} showPrice={false} />
-            <Link to={productPath(entry.product, entry.colorwayId)} className="label link-draw self-start py-1 max-md:order-last">
+            <PurchasePanel product={entry.product} colorwayId={entry.colorwayId} onViewBag={context.close} showPrice={false} source="rail_detail" />
+            <Link to={productPath(entry.product, entry.colorwayId)} state={{ source: "rail" }} className="label link-draw self-start py-1 max-md:order-last">
               Full details
             </Link>
           </div>

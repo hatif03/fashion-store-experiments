@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Link } from "react-router";
+import { dollars, track } from "@/analytics/track";
 import { useBag } from "@/bag/BagProvider";
 import { useCatalog } from "@/catalog/CatalogProvider";
 import { colorwayOf, colorwayStock, formatPrice, productPath, stockLevel, variantFor } from "@/catalog/selectors";
@@ -14,9 +15,11 @@ interface PurchasePanelProps {
   onViewBag?: () => void;
   /** Hide the price line when the surrounding layout already shows it. */
   showPrice?: boolean;
+  /** Where the add happened, for piece_added. */
+  source: "rail_detail" | "product_page";
 }
 
-export function PurchasePanel({ product, colorwayId, onColorwayChange, onViewBag, showPrice = true }: PurchasePanelProps) {
+export function PurchasePanel({ product, colorwayId, onColorwayChange, onViewBag, showPrice = true, source }: PurchasePanelProps) {
   const catalog = useCatalog();
   const bag = useBag();
   const id = React.useId();
@@ -43,6 +46,7 @@ export function PurchasePanel({ product, colorwayId, onColorwayChange, onViewBag
     }
     if (remaining <= 0) return;
     bag.dispatch({ type: "add", sku: variant.sku });
+    track("piece_added", { value: dollars(product.price), productId: product.id, metadata: { source, size: variant.size, colorway: colorway.id } });
     setMessage({ tone: "done", text: `Added ${product.name}, ${colorway.name}, size ${variant.size}.`, colorwayId: colorway.id });
   };
 

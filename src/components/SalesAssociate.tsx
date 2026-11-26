@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Link } from "react-router";
+import { dollars, track } from "@/analytics/track";
 import { useBag } from "@/bag/BagProvider";
 import { useCatalog } from "@/catalog/CatalogProvider";
 import { colorwayOf, formatPrice, productById, productPath, variantBySku } from "@/catalog/selectors";
@@ -25,6 +26,8 @@ interface Turn {
 const WELCOME = "Ask about a cloth, a colour, or what to wear with a piece.";
 const SUGGESTIONS = ["A heavy tee in bone", "Something warm under $200", "What sits with the moss cardigan?", "How do returns work?"];
 
+const pageName = () => window.location.pathname.split("/")[1] || "home";
+
 function sessionId(): string {
   const key = "stillform.associate";
   const existing = sessionStorage.getItem(key);
@@ -40,7 +43,7 @@ function PieceLink({ piece }: { piece: PieceRef }) {
   if (!product) return null;
   const colorway = colorwayOf(product, piece.colorwayId);
   return (
-    <Link to={productPath(product, colorway.id)} className="flex items-center gap-3 border border-border bg-background p-2 outline-none focus-visible:outline focus-visible:outline-[1.5px] focus-visible:outline-offset-2 focus-visible:outline-ring">
+    <Link to={productPath(product, colorway.id)} state={{ source: "associate" }} className="flex items-center gap-3 border border-border bg-background p-2 outline-none focus-visible:outline focus-visible:outline-[1.5px] focus-visible:outline-offset-2 focus-visible:outline-ring">
       <span className="tone-bone relative block h-16 w-12 shrink-0">
         <GarmentImage mediaId={colorway.media.front} alt="" decorative className="absolute inset-0 size-full" />
       </span>
@@ -109,6 +112,7 @@ export function SalesAssociate() {
     ]);
     setInput("");
     setLoading(true);
+    track("associate_message_sent", { metadata: { page: pageName(), turn: history.length / 2 + 1 } });
     const apply = (patch: (turn: Turn) => Turn) => setTurns((current) => current.map((turn) => (turn.id === replyId ? patch(turn) : turn)));
     try {
       const response = await fetch("/api/chat", {
@@ -151,6 +155,7 @@ export function SalesAssociate() {
     const found = variantBySku(catalog, sku);
     if (!found || found.variant.stock <= 0) return;
     bag.dispatch({ type: "add", sku });
+    track("piece_added", { value: dollars(found.product.price), productId: found.product.id, metadata: { source: "associate", size: found.variant.size, colorway: found.variant.colorwayId } });
     bag.setOpen(true);
     setOpen(false);
   };
@@ -162,7 +167,10 @@ export function SalesAssociate() {
         className="label fixed bottom-5 right-5 z-50 border border-foreground/20 bg-background px-4 py-3 text-foreground shadow-[0_12px_40px_rgb(18_17_16/0.12)] hover:border-foreground"
         aria-expanded={open}
         aria-controls="studio-associate"
-        onClick={() => setOpen((value) => !value)}
+        onClick={() => {
+          if (!open) track("associate_opened", { metadata: { page: pageName() } });
+          setOpen(!open);
+        }}
       >
         {open ? "Close" : "Ask the studio"}
       </button>

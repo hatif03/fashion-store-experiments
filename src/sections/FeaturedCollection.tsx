@@ -29,14 +29,14 @@ export function FeaturedCollection() {
           </div>
           {lead && (
             <Reveal className="md:col-span-8">
-              <ProductCard product={lead} size="feature" />
+              <ProductCard product={lead} size="feature" source="collection" />
             </Reveal>
           )}
         </div>
         <ul className="mt-14 grid gap-x-6 gap-y-14 sm:grid-cols-2 md:mt-20 lg:grid-cols-3">
           {rest.map((product, i) => (
             <Reveal as="li" key={product.id} delay={i * 120}>
-              <ProductCard product={product} />
+              <ProductCard product={product} source="collection" />
             </Reveal>
           ))}
         </ul>

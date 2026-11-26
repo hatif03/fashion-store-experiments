@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Link } from "react-router";
+import { dollars, track } from "@/analytics/track";
 import { bagSubtotal } from "@/bag/bag";
 import { useBag } from "@/bag/BagProvider";
 import { useCatalogState } from "@/catalog/CatalogProvider";
@@ -19,6 +20,12 @@ export function BagDrawer() {
   const subtotal = bagSubtotal(catalog, bag.lines);
   const checkout = checkoutAvailability(catalog, source);
   const shipping = shippingFor(catalog, subtotal);
+
+  const wasOpen = React.useRef(false);
+  React.useEffect(() => {
+    if (bag.isOpen && !wasOpen.current) track("bag_opened", { value: dollars(subtotal), metadata: { items: bag.count } });
+    wasOpen.current = bag.isOpen;
+  }, [bag.isOpen, subtotal, bag.count]);
 
   return (
     <div className={`fixed inset-0 z-[60] ${bag.isOpen ? "visible" : "invisible delay-500"} transition-[visibility]`} inert={!bag.isOpen}>
