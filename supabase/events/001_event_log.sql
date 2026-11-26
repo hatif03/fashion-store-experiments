@@ -1,7 +1,7 @@
 -- STILLFORM event log: the anonymous visit events behind the /live page.
 -- A separate Supabase project from the store's optional backend.
 -- Nothing reads or writes the table directly (RLS on, no policies). The
--- server function in api/track.ts calls record_event; api/stats.ts calls
+-- server function in server/track.ts calls record_event; server/stats.ts calls
 -- analytics_summary, which returns aggregates only, never a visitor id.
 
 create table if not exists public.events (

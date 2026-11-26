@@ -18,7 +18,7 @@ function readBody(req: IncomingMessage): Promise<string> {
   });
 }
 
-/** Serves POST /api/chat during `npm run dev`. Production uses api/chat.ts on the host. */
+/** Serves POST /api/chat during `npm run dev`. Production uses server/chat.ts, bundled by scripts/vercel-output.mjs. */
 function associateDev(): Plugin {
   return {
     name: "stillform-associate",

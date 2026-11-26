@@ -33,3 +33,6 @@ reference/
 .vscode/*
 !.vscode/extensions.json
 .idea
+
+# Vercel Build Output API (npm run build:vercel)
+.vercel/

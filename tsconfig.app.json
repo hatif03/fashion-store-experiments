@@ -32,7 +32,7 @@
   },
   "include": [
     "src",
-    "api"
+    "server"
   ],
   "exclude": [
     "src/**/*.test.ts"

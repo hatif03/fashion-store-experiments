@@ -25,7 +25,7 @@ Adapted from the Luxe sales chat: classify the message, answer from the catalogu
 - `src/associate/knowledge.ts` — intent, catalogue brief, selection checks
 - `src/associate/ifm.ts` — the HTTP client
 - `src/associate/handle.ts` — one request
-- `api/chat.ts` — the Vercel function
+- `server/chat.ts` — the Vercel function at `/api/chat`, bundled by `scripts/vercel-output.mjs`
 - `vite.config.ts` — the same handler on `npm run dev`
 
 ## Environment

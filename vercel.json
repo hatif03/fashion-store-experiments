@@ -1,8 +1,5 @@
 {
-  "functions": {
-    "api/chat.ts": { "maxDuration": 60 },
-    "api/track.ts": { "maxDuration": 10 },
-    "api/stats.ts": { "maxDuration": 10 }
-  },
-  "rewrites": [{ "source": "/((?!api/).*)", "destination": "/index.html" }]
+  "framework": null,
+  "installCommand": "npm ci",
+  "buildCommand": "npm run build:vercel"
 }

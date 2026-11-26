@@ -4,6 +4,8 @@ Every change to the store, newest first. Experiment runs and decisions are in `d
 
 ## 2026-11-27
 
+- Fixed the Vercel functions, which crashed on Vercel because Node couldn't resolve the `@/` alias, extensionless imports or JSON imports. `npm run build:vercel` now bundles each function from `server/` into `.vercel/output`.
+- Deployed the showroom to Vercel at https://stillform-sepia.vercel.app.
 - Fixed `npm run preflight -- --demo` on Windows, where it couldn't start the build.
 - On phones, the associate's button moves up while the product page's buy bar shows, so it no longer covers "Choose a size".
 - Updated the end-to-end tests for the ten-piece rail and the demo checkout. Test runs never contact Flagsmith or the event log.

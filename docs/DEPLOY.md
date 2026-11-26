@@ -1,6 +1,6 @@
 # Deploying STILLFORM
 
-Both kinds of site are static: the build output can go on any static host. Single-page routing is already configured: `public/_redirects` for Netlify and Cloudflare Pages, `vercel.json` for Vercel, and `public/.htaccess` for Apache and LiteSpeed hosts such as Hostinger.
+Both kinds of site are static: the build output can go on any static host. Single-page routing is already configured: `public/_redirects` for Netlify and Cloudflare Pages, `scripts/vercel-output.mjs` for Vercel, and `public/.htaccess` for Apache and LiteSpeed hosts such as Hostinger.
 
 | | Your store | The showroom (live demo) |
 | --- | --- | --- |
@@ -22,7 +22,7 @@ It's backend-free by construction: it reads no `.env` files and blanks every Sup
    - no real Studio sign-in, and the Demo Studio present
    - every image
    - routing for the host
-2. On the host, create a site from the repository with build command `npm run build:demo` and output directory `dist`. Set these variables:
+2. On the host, create a site from the repository with build command `npm run build:demo` and output directory `dist`. **On Vercel**, `vercel.json` sets the build command to `npm run build:vercel` instead: it runs the same build, then bundles the three functions in `server/` (`/api/chat`, `/api/track`, `/api/stats`) into Vercel's Build Output API folder `.vercel/output`. Leave the framework as "Other" and the output directory empty. Set these variables:
 
    | Variable | Read by | Value |
    | --- | --- | --- |
@@ -69,6 +69,8 @@ A production build also refuses to compile with a Cloudflare test site key.
 | Output directory | `dist` |
 | Node.js version | 20 or newer |
 | Environment variables | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_TURNSTILE_SITE_KEY` |
+
+On Vercel, change `buildCommand` in `vercel.json` to `npm run build && node scripts/vercel-output.mjs`; as committed it builds the showroom.
 
 Never add the Turnstile secret key, the Supabase secret key or the `service_role` key to the host. The site needs none of them.
 

@@ -1,4 +1,4 @@
-// Server only: imported by api/track.ts, api/stats.ts and the dev server.
+// Server only: imported by server/track.ts, server/stats.ts and the dev server.
 // EVENTS_SUPABASE_URL and EVENTS_SUPABASE_KEY are never prefixed with VITE_.
 
 declare const process: { env: Record<string, string | undefined> };

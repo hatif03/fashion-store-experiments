@@ -26,7 +26,7 @@ Every change, experiment and decision is written down. The Toggle Wars plan is `
 
 ## Deploy
 
-Vercel, output `dist`. The rewrite in `vercel.json` leaves `/api/` to the functions in `api/`. Set `IFM_API_KEY`, `EVENTS_SUPABASE_URL`, `EVENTS_SUPABASE_KEY` and `VITE_FLAGSMITH_ENVIRONMENT_KEY` on the host. The showroom build is `npm run build:demo`. Details are in `docs/DEPLOY.md`.
+Vercel, build command `npm run build:vercel` (set in `vercel.json`). It builds the showroom, then `scripts/vercel-output.mjs` bundles each function in `server/` and writes Vercel's Build Output API folder `.vercel/output`, which serves them at `/api/<name>`. Don't put function sources in `api/`: Vercel would also build them unbundled, and they can't run that way. Set `IFM_API_KEY`, `EVENTS_SUPABASE_URL`, `EVENTS_SUPABASE_KEY` and `VITE_FLAGSMITH_ENVIRONMENT_KEY` on the host. The showroom build is `npm run build:demo`. Details are in `docs/DEPLOY.md`.
 
 ## Agents
 
