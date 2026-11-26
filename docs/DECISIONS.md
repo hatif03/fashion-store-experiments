@@ -4,6 +4,8 @@ Newest first. Each entry says what was decided, why, and what it rules out.
 
 ## 2026-11-27
 
+**D-016. Four experiments, one feature each.** D-001's one-at-a-time rule is retired. Flagsmith allows one running experiment per flag, so four flags can run together. The set, the deciding metric for each, and the ones we refused are in [`experiments/FOUR-EXPERIMENTS.md`](experiments/FOUR-EXPERIMENTS.md). EXP-001 stays as registered. The other three are not built yet. They ship once, before public posts, and they do not change the homepage hero.
+
 **D-015. EXP-001 started at 04:22 IST on Friday 27 November, ahead of the 19:00 target.** The showroom was deployed and a real visit had already arrived in the event log with a city, so waiting until evening would only have shortened the run. The hypothesis, split, metrics, decision rule and stopping rule are unchanged. The hard stop stays 22:00 IST on Saturday 28 November. The browser that opened the site before the start is excluded; see the experiment file.
 
 **D-014. A hidden live page shows the real event data.** `/live`, linked from the © line in the footer, shows visitors, countries, cities on an animated world map, the funnel, the rail-vs-grid split, a live feed and traffic sources. It polls every 15 seconds and shows production data only. It gives judges and visitors a way to see the data is real without a Flagsmith login. It isn't linked from the navigation, so it doesn't pull homepage visitors away mid-experiment.

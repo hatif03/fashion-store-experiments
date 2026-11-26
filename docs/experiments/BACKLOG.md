@@ -1,6 +1,6 @@
 # Experiment backlog
 
-Hypotheses not yet run, ranked by how likely they are to give a clear answer with our traffic (base rate and expected effect size) and how much the answer matters to the store. EXP-002 is picked from here once EXP-001 has ended, in light of its result.
+Ideas that are not in the [four-experiment plan](FOUR-EXPERIMENTS.md). That plan already names EXP-001 to EXP-004. These stay here.
 
 | Rank | Change | Page | Primary metric | Why it matters | Notes |
 | --- | --- | --- | --- | --- | --- |
