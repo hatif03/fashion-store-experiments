@@ -217,6 +217,14 @@ function BuyBar({ product, target }: { product: Product; target: React.RefObject
     observer.observe(node);
     return () => observer.disconnect();
   }, [target]);
+  // The associate's floating button moves up while the bar is showing, so it never covers "Choose a size".
+  React.useEffect(() => {
+    if (visible) document.documentElement.dataset.buybar = "";
+    else delete document.documentElement.dataset.buybar;
+    return () => {
+      delete document.documentElement.dataset.buybar;
+    };
+  }, [visible]);
   return (
     <div
       inert={!visible}

@@ -19,6 +19,6 @@ export default defineConfig({
     url: BASE,
     reuseExistingServer: false,
     timeout: 180_000,
-    env: { VITE_SUPABASE_URL: "https://stray-project.supabase.example", VITE_SUPABASE_ANON_KEY: "stray-key", VITE_STUDIO_ENABLED: "true" },
+    env: { VITE_SUPABASE_URL: "https://stray-project.supabase.example", VITE_SUPABASE_ANON_KEY: "stray-key", VITE_STUDIO_ENABLED: "true", VITE_FLAGSMITH_ENVIRONMENT_KEY: "", VITE_EVENT_LOG: "off" },
   },
 });

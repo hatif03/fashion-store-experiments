@@ -9,7 +9,7 @@ const FALLBACK_PREFIX = "stillform.exp-fallback.";
 /** off: no key, an internal browser, or a server render. failed: the flags request did not succeed. */
 export type FlagsmithStatus = "off" | "loading" | "ready" | "failed";
 
-let status: FlagsmithStatus = "loading";
+let status: FlagsmithStatus = typeof window !== "undefined" && ENVIRONMENT_KEY && !isInternal() ? "loading" : "off";
 let started = false;
 const listeners = new Set<() => void>();
 const pending: Array<() => void> = [];

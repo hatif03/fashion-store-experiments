@@ -45,6 +45,13 @@ export function RailHero() {
   const coarse = useCoarsePointer();
   const { rail } = catalog.settings;
   const total = String(entries.length).padStart(2, "0");
+  const onOpenChange = React.useCallback(
+    (index: number | null) => {
+      const entry = index === null ? undefined : entries[index];
+      if (entry) trackProductView(entry.product.id, dollars(entry.product.price), "rail");
+    },
+    [entries],
+  );
 
   return (
     <ClothingRailHero
@@ -54,10 +61,7 @@ export function RailHero() {
       aria-label={rail.heading}
       autoplay={rail.autoplay}
       maxHeight={maxHeight}
-      onOpenChange={(index) => {
-        const entry = index === null ? undefined : entries[index];
-        if (entry) trackProductView(entry.product.id, dollars(entry.product.price), "rail");
-      }}
+      onOpenChange={onOpenChange}
       labels={{ front: "Front", back: "Back", close: "Back to the rail", show: "Show" }}
       className="flex flex-col pt-16 md:min-h-[100svh] md:justify-center"
       backdrop={<StudioLight />}

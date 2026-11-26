@@ -60,7 +60,7 @@ test("price, stock and rail edits reach the store, and Reset Demo undoes them", 
   await page.getByRole("button", { name: "Save rail" }).click();
   await expect(page.getByText(/Rail saved/)).toBeVisible();
   await page.goto("/");
-  await expect(garments(page)).toHaveCount(8);
+  await expect(garments(page)).toHaveCount(10);
 
   // Take a piece off the rail: the homepage hangs one fewer.
   await page.goto("/demo/admin/rail");
@@ -68,17 +68,17 @@ test("price, stock and rail edits reach the store, and Reset Demo undoes them", 
   await page.getByRole("button", { name: "Save rail" }).click();
   await expect(page.getByText(/Rail saved/)).toBeVisible();
   await page.goto("/");
-  await expect(garments(page)).toHaveCount(7);
+  await expect(garments(page)).toHaveCount(9);
 
   // Edits survive a reload (browser-local), then Reset Demo brings the original back.
   await page.reload();
-  await expect(garments(page)).toHaveCount(7);
+  await expect(garments(page)).toHaveCount(9);
   await page.goto("/demo/admin");
   await page.getByTestId("demo-banner").getByRole("button", { name: "Reset demo" }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Reset demo" }).click();
   await expect(page.getByText("Demo reset to the original collection.")).toBeVisible();
   await page.goto("/");
-  await expect(garments(page)).toHaveCount(8);
+  await expect(garments(page)).toHaveCount(10);
   await page.goto("/products/heavyweight-tee");
   await expect(page.getByText("$85").first()).toBeVisible();
 });
@@ -103,9 +103,10 @@ test("a draft can be published into the shop; orders and settings simulate", asy
   await page.goto("/");
   await expect(page.getByRole("link", { name: /STILLFORM Demo, home/ })).toBeVisible();
 
-  // Checkout stays closed whatever the simulated settings say.
+  // Only the demo checkout runs, whatever the simulated settings say: no real order form.
   await page.goto("/checkout");
-  await expect(page.getByRole("button", { name: /Place order/ })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /^Place order/ })).toHaveCount(0);
+  await expect(page.getByLabel("Email")).toHaveCount(0);
 });
 
 test("lookbook and collections edits are accepted", async ({ page }) => {

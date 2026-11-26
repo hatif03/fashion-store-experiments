@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 // The hosted showroom: the full storefront on its built-in collection, a
-// working bag, no checkout, no Studio and no backend requests at all.
+// working bag, a demo checkout, no Studio and no backend requests at all.
 
 const garments = (page: Page) => page.locator("[data-garment]");
 const backend = /supabase\.co|\/functions\/v1\/|\/rest\/v1\/|\/auth\/v1\/|challenges\.cloudflare\.com/;
@@ -17,7 +17,7 @@ test.afterEach(() => expect(contacted, "requests to a backend").toEqual([]));
 
 test("the storefront, rail and lookbook run on the built-in collection", async ({ page }) => {
   await page.goto("/");
-  await expect(garments(page)).toHaveCount(8);
+  await expect(garments(page)).toHaveCount(10);
   await expect(garments(page).first()).toHaveCSS("opacity", "1");
   await expect(page.locator("#lookbook-title")).toBeAttached();
   await page.goto("/shop");
@@ -31,10 +31,10 @@ test("direct links and refreshes work on every route", async ({ page }) => {
     await page.reload();
     await expect(page.locator("h1").first(), path).toBeVisible();
   }
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("This is a preview of the store.");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Your bag is empty.");
 });
 
-test("the bag works and survives a refresh, but checkout stays a preview", async ({ page }) => {
+test("the bag survives a refresh and the demo checkout places an order without personal details", async ({ page }) => {
   await page.goto("/products/heavyweight-tee");
   await page.locator("label", { hasText: /^M$/ }).click();
   await page.getByRole("button", { name: "Add to bag" }).click();
@@ -42,8 +42,18 @@ test("the bag works and survives a refresh, but checkout stays a preview", async
   await page.reload();
   await expect(page.getByRole("button", { name: /^Bag, 1 item/ })).toBeVisible();
   await page.goto("/checkout");
-  await expect(page.getByRole("heading", { name: "This is a preview of the store." })).toBeVisible();
-  await expect(page.getByRole("button", { name: /Place order/ })).toHaveCount(0);
+  await expect(page.getByRole("heading", { level: 1, name: "Delivery" })).toBeVisible();
+  await expect(page.getByLabel("Email")).toHaveCount(0);
+  await page.getByRole("button", { name: "Continue" }).click();
+  await expect(page.getByText("Choose where it would be delivered.")).toBeVisible();
+  await page.getByLabel("Delivery country").selectOption("India");
+  await page.getByRole("button", { name: "Continue" }).click();
+  await page.getByLabel("Card").check();
+  await page.getByRole("button", { name: "Continue" }).click();
+  await page.getByRole("button", { name: /Place demo order/ }).click();
+  await expect(page).toHaveURL(/\/order\/DEMO-/);
+  await expect(page.getByText("Demo order placed")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Bag, 0 items" })).toBeAttached();
 });
 
 test("the Studio isn't part of the showroom", async ({ page }) => {

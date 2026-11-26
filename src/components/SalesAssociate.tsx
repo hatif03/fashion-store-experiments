@@ -164,7 +164,7 @@ export function SalesAssociate() {
     <>
       <button
         type="button"
-        className="label fixed bottom-5 right-5 z-50 border border-foreground/20 bg-background px-4 py-3 text-foreground shadow-[0_12px_40px_rgb(18_17_16/0.12)] hover:border-foreground"
+        className="label fixed bottom-5 right-5 z-50 transition-[bottom] duration-500 max-md:[html[data-buybar]_&]:bottom-24 border border-foreground/20 bg-background px-4 py-3 text-foreground shadow-[0_12px_40px_rgb(18_17_16/0.12)] hover:border-foreground"
         aria-expanded={open}
         aria-controls="studio-associate"
         onClick={() => {

@@ -5,7 +5,7 @@ const detail = (page: Page) => page.locator("[role=dialog][aria-modal=true]:not(
 
 async function railReady(page: Page) {
   await page.goto("/");
-  await expect(garments(page)).toHaveCount(8);
+  await expect(garments(page)).toHaveCount(10);
   await expect(garments(page).first()).toHaveCSS("opacity", "1");
 }
 
@@ -33,7 +33,7 @@ test("a dragged hanger follows the pointer and springs back", async ({ page }) =
 
 test("a piece taken off the rail can be added to the bag", async ({ page }) => {
   await railReady(page);
-  await garments(page).nth(3).focus();
+  await garments(page).nth(4).focus();
   await page.keyboard.press("Enter");
   const dialog = detail(page);
   await expect(dialog.getByRole("heading", { name: "Lambswool Cardigan" })).toBeVisible();
@@ -51,7 +51,7 @@ test("a piece taken off the rail can be added to the bag", async ({ page }) => {
   await expect(detail(page)).toHaveCount(0);
   const bag = page.getByRole("dialog", { name: /Bag/ });
   await expect(bag.getByText("Moss · L")).toBeVisible();
-  await expect(bag.getByRole("button", { name: "Checkout" })).toBeDisabled();
+  await expect(bag.getByRole("link", { name: "Checkout" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Bag, 1 item" })).toBeAttached();
 
   await page.reload();
@@ -81,7 +81,7 @@ test("the shop filters by category", async ({ page }) => {
   await page.goto("/shop");
   await page.getByRole("button", { name: /^Knitwear/ }).click();
   await expect(page).toHaveURL(/category=knitwear/);
-  await expect(page.locator("main ul > li")).toHaveCount(1);
+  await expect(page.locator("main ul > li")).toHaveCount(3);
 });
 
 test("reduced motion skips the physics and the lift animation", async ({ browser }) => {
@@ -99,7 +99,7 @@ test("reduced motion skips the physics and the lift animation", async ({ browser
 
 test("the caption's Take it down opens the piece turned to the front", async ({ page }) => {
   await railReady(page);
-  const box = (await garments(page).nth(4).boundingBox())!;
+  const box = (await garments(page).nth(6).boundingBox())!;
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   await expect(page.locator("[data-garment][data-front]")).toHaveAttribute("aria-label", "Long-Sleeve Henley");
   const take = page.getByRole("button", { name: "Take it down" });

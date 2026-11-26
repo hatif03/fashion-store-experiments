@@ -20,7 +20,8 @@ export default defineConfig({
   reporter: "list",
   use: { launchOptions: { executablePath } },
   webServer: [
-    { command: "npm run dev -- --port 4317 --strictPort", url: "http://localhost:4317", reuseExistingServer: true },
+    // No Flagsmith and no event log: every run sees the rail and sends nothing.
+    { command: "npm run dev -- --port 4317 --strictPort", url: "http://localhost:4317", reuseExistingServer: true, env: { VITE_FLAGSMITH_ENVIRONMENT_KEY: "", VITE_EVENT_LOG: "off" } },
     // A fresh database for every run.
     { command: "node tests/harness/server.mjs", url: "http://localhost:54321/__harness/health", reuseExistingServer: false, timeout: 120_000 },
     {
@@ -28,7 +29,7 @@ export default defineConfig({
       url: LIVE,
       reuseExistingServer: false,
       // Cloudflare's published Turnstile test site key: always passes.
-      env: { VITE_SUPABASE_URL: "http://localhost:54321", VITE_SUPABASE_ANON_KEY: "harness-anon-key", VITE_TURNSTILE_SITE_KEY: "1x00000000000000000000AA", VITE_CACHE_DIR: "node_modules/.vite-live" },
+      env: { VITE_SUPABASE_URL: "http://localhost:54321", VITE_SUPABASE_ANON_KEY: "harness-anon-key", VITE_TURNSTILE_SITE_KEY: "1x00000000000000000000AA", VITE_CACHE_DIR: "node_modules/.vite-live", VITE_FLAGSMITH_ENVIRONMENT_KEY: "", VITE_EVENT_LOG: "off" },
     },
   ],
   projects: [
