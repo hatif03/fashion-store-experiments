@@ -24,6 +24,7 @@
     "remote:users": "node tests/remote/create-test-users.mjs",
     "remote:cleanup": "node tests/remote/cleanup-test-data.mjs",
     "check:public": "node scripts/check-public.mjs",
+    "flagsmith": "node scripts/flagsmith.mjs",
     "test:showroom": "playwright test --config playwright.showroom.config.ts",
     "test:demo": "playwright test --config playwright.demo.config.ts"
   },
