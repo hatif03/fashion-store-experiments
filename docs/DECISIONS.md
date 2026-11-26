@@ -4,6 +4,8 @@ Newest first. Each entry says what was decided, why, and what it rules out.
 
 ## 2026-11-27
 
+**D-015. EXP-001 started at 04:22 IST on Friday 27 November, ahead of the 19:00 target.** The showroom was deployed and a real visit had already arrived in the event log with a city, so waiting until evening would only have shortened the run. The hypothesis, split, metrics, decision rule and stopping rule are unchanged. The hard stop stays 22:00 IST on Saturday 28 November. The browser that opened the site before the start is excluded; see the experiment file.
+
 **D-014. A hidden live page shows the real event data.** `/live`, linked from the © line in the footer, shows visitors, countries, cities on an animated world map, the funnel, the rail-vs-grid split, a live feed and traffic sources. It polls every 15 seconds and shows production data only. It gives judges and visitors a way to see the data is real without a Flagsmith login. It isn't linked from the navigation, so it doesn't pull homepage visitors away mid-experiment.
 
 **D-013. We keep our own event log next to Flagsmith.** Flagsmith reads events only for exposed identities inside an experiment, and has no map or store-wide funnel. Each event also goes to a Supabase table through `/api/track`, with country and city from Vercel's headers. Coordinates are rounded to about 10 km, the IP address is never read, and the table can only be reached through two functions, one that inserts and one that returns aggregates. Flagsmith stays the source of truth for the experiment result; the log supports the cross-check and the live page. A free Supabase project was created for it.

@@ -19,5 +19,5 @@ Every experiment on STILLFORM runs on Flagsmith Experimentation: a multivariate 
 
 | Id | Question | Status | Result |
 | --- | --- | --- | --- |
-| [EXP-001](EXP-001-homepage-merchandising.md) | Does the interactive rail get more visitors into products than a static grid? | Draft, not started | — |
+| [EXP-001](EXP-001-homepage-merchandising.md) | Does the interactive rail get more visitors into products than a static grid? | Running since 04:22 IST, 27 Nov | — |
 | EXP-002 | Chosen from the [backlog](BACKLOG.md) once EXP-001 has ended | — | — |

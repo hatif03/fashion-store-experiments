@@ -1,6 +1,6 @@
 # EXP-001: Homepage merchandising, rail vs grid
 
-**Status:** draft, not started. Fill in the blanks at launch, then freeze this section.
+**Status:** running. This section was filled in at launch and is frozen.
 
 ## Question
 
@@ -19,7 +19,7 @@ The clothing rail is the brand's signature and its most expensive component: phy
 | Primary metric | `product_viewed`, occurrence, direction `increase` |
 | Secondary metrics | `piece_added` occurrence (`increase`), `checkout_started` occurrence (`increase`), `order_placed` occurrence (`increase`) and sum of `value` (`increase`) |
 | Guardrail | `engaged_visit` occurrence, should not decrease |
-| Run window | Starts: ____ (Fri 27 Nov, target 19:00 IST). Minimum 24 hours |
+| Run window | Started 04:22 IST, Friday 27 Nov 2026 (Flagsmith `started_at` 2026-11-26T22:52:35Z). Ahead of the 19:00 target, recorded in [D-015](../DECISIONS.md). Minimum 24 hours, so the first snapshot that can decide it is 04:22 IST, Saturday 28 Nov |
 | Stopping rule | At the first 6-hourly snapshot after 24 hours where the trust checks pass and the grid's chance to beat the rail is above 95% or below 5%. Otherwise at a hard stop of Sat 28 Nov, 22:00 IST |
 | Decision rule | Ship the grid only above 95% with a credible interval clear of zero. Below 5%, the rail is confirmed. In between, inconclusive, and the rail stays |
 
@@ -57,7 +57,7 @@ Any version can be seen without being enrolled by adding `?preview=rail` or `?pr
 | Environment key | `S7XdcYEJmwHsrATg4CWvgT` | `EtSGzCGxfgVyDbvNSTp8vR` |
 | Feature | `homepage_merchandising` (306276), control `rail`, variation `grid` (option 37513) | Same feature |
 | Metrics | 826 to 832 | 833 to 839, listed in [`../METRICS.md`](../METRICS.md#flagsmith-metrics) |
-| Experiment | 789, running since 03:02 IST, 27 Nov, for verification | 790, created, not started |
+| Experiment | 789, running since 03:02 IST, 27 Nov, for verification | 790, running since 04:22 IST, 27 Nov |
 
 Environment keys are public by design: they ship in the browser bundle and only read flags.
 
@@ -65,7 +65,7 @@ Environment keys are public by design: they ship in the browser bundle and only 
 
 Creating experiment 789 in QA immediately published its rollout: a segment `experiment-789-rollout` with a 50/50 split on the feature. Identities got split values straight away, but with no enrolment metadata and no exposures, because the experiment hadn't started. When it started, assignments were drawn again. A visitor seen before the start could switch version at the start.
 
-This doesn't affect production results: experiment 790 has had no public traffic before launch, and our own browsers skip Flagsmith entirely. After the start, the raw flags response carries `metadata.experiment.in_experiment: true`, which is what the SDK uses to decide whether to record an exposure. A sample of 60 new identities in QA got 24 `grid` and 36 `rail`, within what a fair 50/50 coin gives at that size.
+This doesn't affect production results. One browser opened the production site before the start (visitor `1ff52a21-8c37-483f-bd3b-8a4636188964`, this machine, Kolkata, `/` and `/shop`). It is excluded from the result, and our own browsers use `?internal=1` from here on. After the start, the raw flags response carries `metadata.experiment.in_experiment: true`, which is what the SDK uses to decide whether to record an exposure. A sample of 60 new identities in QA got 24 `grid` and 36 `rail`, within what a fair 50/50 coin gives at that size.
 
 ## Setup checklist
 
@@ -73,10 +73,10 @@ This doesn't affect production results: experiment 790 has had no public traffic
 - [x] Flag created with a key on every variation
 - [x] Metrics created, names matching [`../METRICS.md`](../METRICS.md) exactly
 - [x] Experiment created in QA and verified: exposures and every event arrive
-- [ ] Deployed to production with the production environment key, event log verified with real geo
+- [x] Deployed to production at https://stillform-sepia.vercel.app with the production environment key. The event log recorded a real visit in Kolkata, and `/live` showed it on the map
 - [x] Experiment 790 created in production with the same flag, metrics and hypothesis
-- [ ] Experiment 790 started, start time recorded above
-- [ ] Store frozen
+- [x] Experiment 790 started at 04:22 IST, Friday 27 Nov 2026. Rollout 100%, split 50/50
+- [x] Store frozen. Bug fixes only, each logged here with a timestamp
 
 ## Run log
 
@@ -84,6 +84,7 @@ Snapshots every ~6 hours: identities per version, primary metric per version, ch
 
 | Time (IST) | Rail ids | Grid ids | Rail rate | Grid rate | Chance grid wins | SRM | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
+| Fri 27 Nov, 04:22 | — | — | — | — | — | — | Started. Excluded visitor `1ff52a21-8c37-483f-bd3b-8a4636188964` (our browser, before the start, no exposure). |
 
 ## Results
 

@@ -20,7 +20,7 @@ Track 1 is judged on one experiment done well: a clear hypothesis, versions behi
 | Fri daytime | 1. Instrumentation | Tracking module, visitor id, UTM capture, the `homepage_merchandising` flag and the grid variant, all events in [`METRICS.md`](METRICS.md) firing in QA |
 | Fri daytime | 2. Store features | Demo checkout, then the optional features below if time allows |
 | Fri daytime | 3. Catalogue | New pieces and colourways live, rail lineup frozen |
-| Fri ~18:00–19:00 | 4. Launch | Deployed, events seen on QA, EXP-001 started in production, store frozen |
+| Done 04:22, Fri 27 Nov | 4. Launch | Deployed at https://stillform-sepia.vercel.app, events seen on QA and in the production event log, EXP-001 started, store frozen |
 | Fri night to Sun 14:00 | 5. Run | Traffic rounds, snapshot every ~6 hours, EXP-001 stopping rule, then EXP-002 |
 | Sun 14:00–18:00 | 6. Results | Scorecards read, frequentist cross-check, winner rolled out on the same flag, write-up, demo video, submission |
 

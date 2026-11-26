@@ -6,6 +6,7 @@ A luxury fashion store built around an interactive clothing rail: a storefront, 
 - **Deploy your store, or the backend-free showroom:** [`docs/DEPLOY.md`](docs/DEPLOY.md)
 - **How the backend works:** [`docs/BACKEND.md`](docs/BACKEND.md) (schema, security rules, functions, checkout protection)
 - **Experiments (Toggle Wars):** [`docs/HACKATHON-PLAN.md`](docs/HACKATHON-PLAN.md), [`docs/experiments/`](docs/experiments/), [`docs/METRICS.md`](docs/METRICS.md), [`docs/DECISIONS.md`](docs/DECISIONS.md)
+- **Public showroom:** https://stillform-sepia.vercel.app (EXP-001 is running). The visitor map is at `/live`
 - **Screenshots:** [`docs/screenshots/`](docs/screenshots/) (storefront) and [`docs/screenshots/phase-2/`](docs/screenshots/phase-2/) (dashboard, checkout)
 
 Without Supabase configured, the store runs on its built-in demo collection, with checkout off. With it, products, stock and orders live in your database and are managed at `/admin`.
@@ -23,7 +24,7 @@ npm run dev          # http://localhost:5173
 | --- | --- |
 | `npm run dev` | Dev server with hot reload |
 | `npm run build` | Typecheck, then production build to `dist/` |
-| `npm run build:demo` | The showroom: built-in collection, bag, no checkout, no Studio, no backend settings read |
+| `npm run build:demo` | The showroom: built-in collection, bag, demo checkout, no Studio, no backend settings read |
 | `npm run preview` | Serve the production build locally |
 | `npm run setup` | Connect the store to your Supabase project, step by step (`-- --check` to only report) |
 | `npm run admin:grant -- you@example.com` | Make an existing account an administrator |
