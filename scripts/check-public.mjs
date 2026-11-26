@@ -47,6 +47,7 @@ for (const file of files) {
     for (const match of text.matchAll(re)) flag(file, `${what}: ${match[0].slice(0, 24)}…`);
   };
   scan(/sb_(secret|publishable)_[A-Za-z0-9_-]{10,}/g, "Supabase API key");
+  scan(/\bIFM-[A-Za-z0-9_-]{10,}/g, "IFM API key");
   scan(/eyJ[A-Za-z0-9_-]{15,}\.eyJ[A-Za-z0-9_-]{15,}/g, "JWT (possibly a legacy anon or service_role key)");
   scan(/0x4AAAA[A-Za-z0-9_-]{6,}/g, "Cloudflare Turnstile key");
   scan(/-----BEGIN [A-Z ]*PRIVATE KEY-----/g, "private key");

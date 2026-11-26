@@ -1,13 +1,61 @@
 import { fileURLToPath, URL } from "node:url";
+import type { IncomingMessage, ServerResponse } from "node:http";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
-import { loadEnv, type Plugin } from "vite";
+import { loadEnv, type Plugin, type ViteDevServer } from "vite";
 import { defineConfig } from "vitest/config";
 
 // Cloudflare's published Turnstile test site keys pass every visitor.
 const TURNSTILE_TEST_SITE_KEY = /^[0-9]x0{20}[A-F]{2}$/;
 
 /** Stops a production build that would take orders behind test protection. */
+function readBody(req: IncomingMessage): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    req.on("data", (chunk: Buffer) => chunks.push(chunk));
+    req.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
+    req.on("error", reject);
+  });
+}
+
+/** Serves POST /api/chat during `npm run dev`. Production uses api/chat.ts on the host. */
+function associateDev(): Plugin {
+  return {
+    name: "stillform-associate",
+    apply: "serve",
+    configureServer(server: ViteDevServer) {
+      const env = loadEnv(server.config.mode, process.cwd(), "IFM_");
+      for (const [key, value] of Object.entries(env)) process.env[key] ??= value;
+      server.middlewares.use(async (req: IncomingMessage, res: ServerResponse, next: (error?: unknown) => void) => {
+        const path = req.url?.split("?")[0];
+        if (path !== "/api/chat") return next();
+        if (req.method !== "POST") {
+          res.statusCode = 405;
+          res.end("POST only");
+          return;
+        }
+        try {
+          const raw = await readBody(req);
+          const { handleAssociate } = (await server.ssrLoadModule("/src/associate/handle.ts")) as {
+            handleAssociate: (body: unknown, emit: (event: unknown) => void) => Promise<void>;
+          };
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
+          res.setHeader("Cache-Control", "no-cache, no-transform");
+          await handleAssociate(raw ? JSON.parse(raw) : {}, (event) => {
+            res.write(`data: ${JSON.stringify(event)}\n\n`);
+          });
+          res.end();
+        } catch (error) {
+          if (!res.headersSent) res.statusCode = 500;
+          res.end(`data: ${JSON.stringify({ type: "error", message: "The studio associate is unavailable." })}\n\n`);
+          server.config.logger.error(error instanceof Error ? error.message : "associate failed");
+        }
+      });
+    },
+  };
+}
+
 function launchGuard(): Plugin {
   return {
     name: "stillform-launch-guard",
@@ -45,7 +93,7 @@ const SHOWROOM = {
 const NO_DEMO = { __DEMO_DASHBOARD__: "false" };
 
 export default defineConfig(({ mode }) => ({
-  plugins: [react(), tailwindcss(), launchGuard()],
+  plugins: [react(), tailwindcss(), launchGuard(), associateDev()],
   envDir: mode === "demo" ? false : undefined,
   define: mode === "demo" ? SHOWROOM : NO_DEMO,
   // Lets two dev servers (demo and live-backend tests) run side by side.

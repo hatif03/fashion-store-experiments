@@ -12,6 +12,7 @@ playwright-report
 .env
 .env.local
 .env*.local
+flagsmith.env
 supabase/.env
 supabase/functions/.env
 *.pem

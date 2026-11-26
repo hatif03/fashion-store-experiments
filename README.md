@@ -52,6 +52,7 @@ In development, `/lab/original-rail` renders the untouched original component an
 - `/demo/admin` — the Demo Studio, only in the showroom build (`build:demo`): the real dashboard over fictional, browser-local data, no login and no backend. Edits to products, prices, stock, the rail, collections, the lookbook, orders and settings show in the demo store; **Reset demo** restores the original. Code in `src/demo/`; the production build never includes it
 - `/admin` — the dashboard (sign-in required; administrators only). Left out of the showroom build, and of any build with `VITE_STUDIO_ENABLED=false`
 - The bag is a drawer available everywhere
+- Ask the studio — a sales associate on every storefront page. It answers from the built-in collection (cloth, colour, what to wear together, shipping and returns) and can place a piece in the bag. The browser talks to `POST /api/chat`; the key for [K2 Horizon](https://docs.ifm.ai/docs/quickstart.md) stays in `IFM_API_KEY` on the server. See [`.env.example`](.env.example)
 
 ## Architecture
 
@@ -63,6 +64,7 @@ src/
     selectors.ts      pure lookups: rail entries, stock, prices, paths
     CatalogProvider   loads the catalogue: demo data, or storefront_catalog() from Supabase
   bag/                bag reducer (stock-capped) + provider (localStorage)
+  associate/          studio sales associate: catalogue briefing, IFM K2 Horizon, selection checks
   checkout/           checkout availability, validation, Turnstile, the place-order call and error handling
   admin/              the dashboard (lazy-loaded): pages, image tools, rail photo editor
   lib/supabase.ts     the Supabase client (anon key only) and RPC helper

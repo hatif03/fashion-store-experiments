@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Outlet, ScrollRestoration, useLocation } from "react-router";
 import { BagDrawer } from "@/components/BagDrawer";
+import { SalesAssociate } from "@/components/SalesAssociate";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 
@@ -26,6 +27,7 @@ export function Layout() {
         <Outlet />
       </main>
       <SiteFooter />
+      <SalesAssociate />
       <BagDrawer />
       <ScrollRestoration getKey={(location) => location.pathname} />
     </>

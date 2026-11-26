@@ -7,7 +7,7 @@ Both kinds of site are static: the build output can go on any static host. Singl
 | **What it is** | A real shop: your catalogue in Supabase, checkout, the Studio at `/admin` | The full storefront, rail, lookbook, product pages and bag on the built-in collection. Checkout shows "This is a preview of the store." and there is no real Studio: the Demo Studio at `/demo/admin` is a simulation on fictional, browser-local data |
 | **Build command** | `npm run build` | `npm run build:demo` |
 | **Output directory** | `dist` | `dist` |
-| **Environment variables** | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_TURNSTILE_SITE_KEY` | None |
+| **Environment variables** | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_TURNSTILE_SITE_KEY`, and `IFM_API_KEY` for the associate | `IFM_API_KEY` for the associate. No `VITE_` variables |
 | **Needs** | A Supabase project, a Cloudflare Turnstile widget, a domain | Only a domain (or the host's free subdomain) |
 | **Check first** | `npm run preflight` | `npm run preflight -- --demo` |
 
@@ -22,7 +22,7 @@ It's backend-free by construction: it reads no `.env` files and blanks every Sup
    - no real Studio sign-in, and the Demo Studio present
    - every image
    - routing for the host
-2. On the host, create a site from the repository with build command `npm run build:demo` and output directory `dist`. Add no environment variables.
+2. On the host, create a site from the repository with build command `npm run build:demo` and output directory `dist`. Add no `VITE_` variables. Set `IFM_API_KEY` if the studio associate should answer. It is read only by the `/api/chat` function, never by the browser bundle. Without it the store still loads and the associate says it is not configured.
 3. After deploying, open a product page directly, refresh it, and open `/checkout` and `/admin`. You should see a preview message on `/checkout` and "not found" on `/admin`.
 
 `npm run test:showroom` runs the same checks in a browser against the production demo build.
