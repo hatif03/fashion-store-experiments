@@ -9,7 +9,7 @@ description: >-
 
 # Flagsmith experiment
 
-Track 1 is judged on one experiment done well. We run four, one feature each, written in `docs/experiments/FOUR-EXPERIMENTS.md`. EXP-001 is running. The other three are planned and not built. A flag still has only one experiment at a time. The plan is `docs/HACKATHON-PLAN.md`, the rules are `docs/experiments/README.md`, events are `docs/METRICS.md`, and decisions are `docs/DECISIONS.md`. Update those files, the experiment file and `CHANGELOG.md` with every change.
+Track 1 is judged on one experiment done well. We run five, one feature each, written in `docs/experiments/FOUR-EXPERIMENTS.md`. EXP-001 is running. The other four are planned and not built. A flag still has only one experiment at a time. The plan is `docs/HACKATHON-PLAN.md`, the rules are `docs/experiments/README.md`, events are `docs/METRICS.md`, and decisions are `docs/DECISIONS.md`. Update those files, the experiment file and `CHANGELOG.md` with every change.
 
 ## EXP-001, already decided
 

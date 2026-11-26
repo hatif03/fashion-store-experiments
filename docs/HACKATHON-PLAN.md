@@ -21,7 +21,7 @@ Track 1 is judged on one experiment done well: a clear hypothesis, versions behi
 | Fri daytime | 2. Store features | Demo checkout, then the optional features below if time allows |
 | Fri daytime | 3. Catalogue | New pieces and colourways live, rail lineup frozen |
 | Done 04:22, Fri 27 Nov | 4. Launch | Deployed at https://stillform-sepia.vercel.app, events seen on QA and in the production event log, EXP-001 started, store frozen |
-| Fri night to Sun 14:00 | 5. Run | Traffic rounds, snapshots, the four experiments in [`experiments/FOUR-EXPERIMENTS.md`](experiments/FOUR-EXPERIMENTS.md). EXP-002 to EXP-004 start before the posts and do not change the homepage hero |
+| Fri night to Sun 14:00 | 5. Run | Traffic rounds, snapshots, the five experiments in [`experiments/FOUR-EXPERIMENTS.md`](experiments/FOUR-EXPERIMENTS.md). EXP-002 to EXP-005 start before the posts and do not change the homepage hero |
 | Sun 14:00–18:00 | 6. Results | Scorecards read, frequentist cross-check, winner rolled out on the same flag, write-up, demo video, submission |
 
 ## Store changes

@@ -1,8 +1,8 @@
-# Four experiments
+# Five experiments
 
 A plan only. Nothing here is built, and nothing here changes [EXP-001](EXP-001-homepage-merchandising.md), which is already running and frozen.
 
-Each experiment is one feature, one flag, one primary metric. Four flags can run at once: Flagsmith allows one active experiment per flag, not one per project. The same visitor id is used everywhere, so a person can be in all four. Assignment is independent. That keeps each comparison fair, and it adds noise, which the power section accounts for.
+Each experiment is one feature, one flag, one primary metric. Five flags can run at once: Flagsmith allows one active experiment per flag, not one per project. The same visitor id is used everywhere, so a person can be in all five. Assignment is independent. That keeps each comparison fair, and it adds noise, which the power section accounts for.
 
 ## How an e-commerce test is scored
 
@@ -69,7 +69,7 @@ Already running since 04:22 IST, Friday 27 November. Full pre-registration: [EXP
 | Deciding metric | `product_viewed` occurrence. The hero's job is to get a piece opened. Both versions can do it |
 | Why not revenue | Orders are too rare, and too heavy-tailed, to decide a homepage test this weekend |
 
-The other three must not change this hero. Their code can ship while EXP-001 is running only if the homepage path is untouched, and only before public posts go out. A deploy after strangers have arrived is a change in the middle of EXP-001.
+The other four must not change this hero. Their code can ship while EXP-001 is running only if the homepage path is untouched, and only before public posts go out. A deploy after strangers have arrived is a change in the middle of EXP-001.
 
 ## EXP-002. A suggested size
 
@@ -117,19 +117,38 @@ The other three must not change this hero. Their code can ship while EXP-001 is 
 | Why not `associate_opened` | The variation opens the panel itself. That event would crown the variation by construction |
 | Effect on the others | No homepage change. On the product page it can distract from the size control and the companion block, which is what the add-to-bag guardrail is there to catch |
 
+## EXP-005. The phone buy bar adds
+
+The panel button already says "Add to bag" and shows the price. On a phone, once that panel scrolls off the screen, a bar replaces it. The bar says "Choose a size" and only scrolls back. It never adds. The piece reaches the bag only while the visitor is still looking at the panel.
+
+| | |
+| --- | --- |
+| Feature | That phone bar only. The panel button, the size control, the price and the desktop page stay put |
+| Flag | `buy_bar`. Control `return` (today: the bar scrolls back to the sizes). Variation `adds` |
+| Variation | If a size is already selected and in stock, the bar button says "Add to bag" and performs the same add as the panel, with `piece_added` source `buy_bar`. With no size selected, the bar still says "Choose a size" and scrolls back. It never invents a size |
+| Exposed | A phone product page, at the moment the bar appears. Desktop visitors are not enrolled. Anyone who never scrolls the panel away is not enrolled |
+| Deciding metric | `piece_added` occurrence, direction `increase` |
+| Driver | `checkout_started` occurrence |
+| Guardrail, this feature | `checkout_started` should not decrease. A tap on the bar can add a size the visitor chose and then left behind |
+| Hypothesis | For people on a phone who have scrolled the purchase panel off the screen, a bar that adds the size they already chose will raise the share who add the piece by at least 10 percentage points |
+| Why this metric | The question is what gets the piece into the bag. The bar is the step that currently refuses to do it. The visitor still has to tap, so the treatment does not add the piece by itself |
+| Why this can be read | Only phones, and only people who scroll, so this is the smallest sample of the five. It may stay under 50 per version. Then Flagsmith shows nothing, the event log supplies the rate, and we do not call a winner |
+| Effect on the others | No homepage change. EXP-002 also decides on `piece_added`, earlier, when the panel is on screen. An add from the panel before the bar appears counts for EXP-002 only. An add from the bar counts for both. The write-up names which exposure had happened. The associate button already moves up while the bar is showing, and that stays |
+
 ## What was left out
 
-| Idea | Why it is not one of the four |
+| Idea | Why it is not one of the five |
 | --- | --- |
 | One-step checkout, or a shipping threshold | Checkout starters on a weekend will not reach 50 per version. A deciding metric that cannot appear is not a test |
 | Shop sort, or the rail caption "Try it on" | The likely effect is a few points. The table above says a few points are invisible at this sample |
 | Worn photograph first | Many colourways have no worn photograph, so the enrolled population would be a subset that is easy to misread |
+| "Add to bag" versus "Buy now" on the panel button | The panel already adds, and a wording change of that size will not show at this sample |
 | Revenue per visitor as the deciding metric | Right for a real shop. Too heavy-tailed on demo orders, and sum metrics can double-count a retried event |
 
 ## Order of work, when building starts
 
-1. Copy EXP-002, EXP-003 and EXP-004 from this page into their own pre-registration files. Those files freeze at start, as EXP-001 did.
-2. Build the three flags. Exposure only at the feature, as the tables say.
+1. Copy EXP-002, EXP-003, EXP-004 and EXP-005 from this page into their own pre-registration files. Those files freeze at start, as EXP-001 did.
+2. Build the four flags. Exposure only at the feature, as the tables say.
 3. Prove in QA that each exposure and each deciding event arrives, and that the homepage hero is unchanged for both EXP-001 versions.
-4. Deploy, create the three production experiments, start them, and only then post the public links.
+4. Deploy, create the four production experiments, start them, and only then post the public links.
 5. Freeze again. Bug fixes only, logged with a time in the experiment file.

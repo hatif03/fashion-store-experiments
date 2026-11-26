@@ -1,6 +1,6 @@
 # Experiment backlog
 
-Ideas that are not in the [four-experiment plan](FOUR-EXPERIMENTS.md). That plan already names EXP-001 to EXP-004. These stay here.
+Ideas that are not in the [five-experiment plan](FOUR-EXPERIMENTS.md). That plan already names EXP-001 to EXP-005. These stay here.
 
 | Rank | Change | Page | Primary metric | Why it matters | Notes |
 | --- | --- | --- | --- | --- | --- |

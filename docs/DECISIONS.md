@@ -4,6 +4,8 @@ Newest first. Each entry says what was decided, why, and what it rules out.
 
 ## 2026-11-27
 
+**D-017. A fifth experiment, on what gets a piece into the bag.** The phone buy bar. Today it only scrolls back to the sizes. The variation adds the size the visitor already chose. Deciding metric `piece_added`. It is in [`experiments/FOUR-EXPERIMENTS.md`](experiments/FOUR-EXPERIMENTS.md) as EXP-005. Phones who scroll the panel away are the whole sample, so it may not reach 50 per version. No winner is called from a smaller log.
+
 **D-016. Four experiments, one feature each.** D-001's one-at-a-time rule is retired. Flagsmith allows one running experiment per flag, so four flags can run together. The set, the deciding metric for each, and the ones we refused are in [`experiments/FOUR-EXPERIMENTS.md`](experiments/FOUR-EXPERIMENTS.md). EXP-001 stays as registered. The other three are not built yet. They ship once, before public posts, and they do not change the homepage hero.
 
 **D-015. EXP-001 started at 04:22 IST on Friday 27 November, ahead of the 19:00 target.** The showroom was deployed and a real visit had already arrived in the event log with a city, so waiting until evening would only have shortened the run. The hypothesis, split, metrics, decision rule and stopping rule are unchanged. The hard stop stays 22:00 IST on Saturday 28 November. The browser that opened the site before the start is excluded; see the experiment file.
