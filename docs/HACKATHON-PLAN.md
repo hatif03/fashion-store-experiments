@@ -79,15 +79,13 @@ The rail keeps about 10 curated hangers, and the grid variant shows exactly thos
 
 ## Traffic
 
-Real visits to the deployed showroom. Every link carries `utm_source` for its channel and points at the homepage: someone who lands straight on a product page never enters EXP-001. Posts and their visits are logged in [`TRAFFIC.md`](TRAFFIC.md).
+Real visits to the deployed showroom, https://stillform-sepia.vercel.app. Every link carries `utm_source` for its channel and points at the homepage: someone who lands straight on a product page never enters EXP-001. Posts say it is a demo store running an experiment, and they do not say what the versions are. The ready-to-post links, the reviewer links, and where to put each one are in [`TRAFFIC.md`](TRAFFIC.md).
 
 | When | Channels |
 | --- | --- |
 | Fri evening | WeMakeDevs and Flagsmith Discords, X (tag @flagsmith and @WeMakeDevs), LinkedIn, trading test visits with other hackers |
 | Sat | r/webdev Showoff Saturday (Saturdays only), r/SideProject, Peerlist, a dev.to post, daily.dev, Show HN around 19:30 |
 | Sun morning | A reminder round |
-
-Posts say it is a demo store running an experiment, but not what the versions are.
 
 Backup: if either version of a running experiment is below Flagsmith's floor (50 identities and 5 conversions) by Sunday 10:00, scripted traffic runs in a separate Flagsmith environment and is disclosed in the write-up. It is never mixed into the production results.
 

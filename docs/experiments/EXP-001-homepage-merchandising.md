@@ -50,6 +50,16 @@ Both versions can produce the event, so the comparison is fair. The `source` met
 
 Any version can be seen without being enrolled by adding `?preview=rail` or `?preview=grid` to the homepage address.
 
+## For reviewers
+
+The showroom is https://stillform-sepia.vercel.app. Open `?internal=1` once in a browser that should not count, then:
+
+- Control: https://stillform-sepia.vercel.app/?internal=1&preview=rail
+- The other version: https://stillform-sepia.vercel.app/?internal=1&preview=grid
+- The live map of real visits: https://stillform-sepia.vercel.app/live?internal=1
+
+`?internal=1` is remembered in that browser until `?internal=0`. A normal visit, with no parameters, is a participant. Links for posts are in [`../TRAFFIC.md`](../TRAFFIC.md). They point at the homepage and do not describe the two versions.
+
 ## Flagsmith setup
 
 | Item | QA | Production |

@@ -38,7 +38,7 @@ Use the Flagsmith CLI v2, not the Flagsmith MCP server. The MCP server cannot st
 4. Confirm the environment has a warehouse. If it does not, stop and point at the warehouse docs. Events are dropped without one.
 5. Create the multivariate flag with a key on every variation, then the metrics, then the experiment. Follow https://docs.flagsmith.com/experimentation/set-up-with-a-coding-agent and https://docs.flagsmith.com/experimentation/run-an-experiment. `npm run flagsmith -- api <path>` calls any endpoint; for example `api/v1/environments/<key>/experiments/` and `api/v1/environments/<key>/experiment-metrics/`. With feature versioning on, flag changes go through `api/v1/environments/<numeric id>/features/<id>/versions/`.
 6. Start the experiment only after the deployed store records exposures and the primary event in QA.
-7. Traffic has to be real visits to the deployed site, both versions, before Sunday. Scripted sessions are allowed only in a separate environment and only if the write-up says they were scripted. Do not post conversion events by hand.
+7. Traffic has to be real visits to the deployed site, both versions, before Sunday. The homepage links, one per channel, and the notes on where to post them are in `docs/TRAFFIC.md`. Reviewers use `?internal=1` plus `?preview=rail` or `?preview=grid`, also listed there and in the README, so their own browsing stays out of the result. Scripted sessions are allowed only in a separate environment and only if the write-up says they were scripted. Do not post conversion events by hand.
 
 ## Reading the result
 

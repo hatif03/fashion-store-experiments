@@ -6,8 +6,31 @@ A luxury fashion store built around an interactive clothing rail: a storefront, 
 - **Deploy your store, or the backend-free showroom:** [`docs/DEPLOY.md`](docs/DEPLOY.md)
 - **How the backend works:** [`docs/BACKEND.md`](docs/BACKEND.md) (schema, security rules, functions, checkout protection)
 - **Experiments (Toggle Wars):** [`docs/HACKATHON-PLAN.md`](docs/HACKATHON-PLAN.md), [`docs/experiments/`](docs/experiments/), [`docs/METRICS.md`](docs/METRICS.md), [`docs/DECISIONS.md`](docs/DECISIONS.md)
-- **Public showroom:** https://stillform-sepia.vercel.app (EXP-001 is running). The visitor map is at `/live`
 - **Screenshots:** [`docs/screenshots/`](docs/screenshots/) (storefront) and [`docs/screenshots/phase-2/`](docs/screenshots/phase-2/) (dashboard, checkout)
+
+## Try the running experiment
+
+The public showroom is [stillform-sepia.vercel.app](https://stillform-sepia.vercel.app). [EXP-001](docs/experiments/EXP-001-homepage-merchandising.md) is running: the homepage is one of two versions, assigned at random. The record of real visits, with cities on a map, is [stillform-sepia.vercel.app/live](https://stillform-sepia.vercel.app/live). Checkout on this site is a demo. Nothing is charged and no personal details are asked.
+
+**If you are reviewing, open these.** They show each version and leave you out of the result.
+
+| What | Link |
+| --- | --- |
+| Mark this browser as a reviewer | https://stillform-sepia.vercel.app/?internal=1 |
+| The control | https://stillform-sepia.vercel.app/?internal=1&preview=rail |
+| The other version | https://stillform-sepia.vercel.app/?internal=1&preview=grid |
+| The live map | https://stillform-sepia.vercel.app/live?internal=1 |
+
+`?internal=1` sticks in this browser until `?internal=0`. A visit with no parameters is a real participant, so use the table above while reviewing.
+
+**If you are sending visitors,** link to the homepage, never a product page, and don't describe the two versions. Each channel has its own link. The posting notes are in [`docs/TRAFFIC.md`](docs/TRAFFIC.md).
+
+| Channel | Link |
+| --- | --- |
+| WeMakeDevs | https://stillform-sepia.vercel.app/?utm_source=wemakedevs&utm_medium=chat&utm_campaign=togglewars |
+| Flagsmith | https://stillform-sepia.vercel.app/?utm_source=flagsmith&utm_medium=chat&utm_campaign=togglewars |
+| X | https://stillform-sepia.vercel.app/?utm_source=x&utm_medium=post&utm_campaign=togglewars |
+| LinkedIn | https://stillform-sepia.vercel.app/?utm_source=linkedin&utm_medium=post&utm_campaign=togglewars |
 
 Without Supabase configured, the store runs on its built-in demo collection, with checkout off. With it, products, stock and orders live in your database and are managed at `/admin`.
 
@@ -37,7 +60,7 @@ npm run dev          # http://localhost:5173
 | `npm run test:e2e` | Browser tests: storefront (demo mode) plus dashboard and checkout against a local test backend. Run `npx playwright install chromium` once first |
 | `npm run db:build` | Regenerate `supabase/seed.sql` and `supabase/setup.sql` from the demo catalogue and migrations |
 | `npm run test:demo` | The Demo Studio at `/demo/admin` in the production showroom build, on desktop and a phone: edits reach the store, Reset Demo, no backend requests |
-| `npm run test:showroom` | The production showroom build in a browser: every route, direct links, the bag, no checkout, no Studio, no backend requests |
+| `npm run test:showroom` | The production showroom build in a browser: every route, direct links, the bag, the demo checkout, no Studio, no backend requests |
 | `npm run test:permissions` | Exact database grants, checked on a strict and a legacy Supabase project |
 
 Testing against a real Supabase project (`remote:users`, `test:remote`, `remote:cleanup`) is for developers only, on a separate test project; see the end of [`docs/SETUP.md`](docs/SETUP.md).
@@ -49,7 +72,8 @@ In development, `/lab/original-rail` renders the untouched original component an
 - `/` — rail hero, brand statement, featured collection, lookbook, footer
 - `/shop` — all pieces, filterable by category (`?category=knitwear`)
 - `/products/:slug` — product page; `?colour=black` selects a colourway
-- `/checkout`, `/order/:reference` — checkout and confirmation (open only with a configured backend)
+- `/checkout`, `/order/:reference` — checkout and confirmation. On the public showroom this is a demo: nothing is charged and no personal details are asked. A configured store takes a real order
+- `/live` — visitors, countries and cities from the anonymous event log. Hidden from the navigation; the © line in the footer links here
 - `/info` — shipping, returns and contact, from the store settings
 - `/demo/admin` — the Demo Studio, only in the showroom build (`build:demo`): the real dashboard over fictional, browser-local data, no login and no backend. Edits to products, prices, stock, the rail, collections, the lookbook, orders and settings show in the demo store; **Reset demo** restores the original. Code in `src/demo/`; the production build never includes it
 - `/admin` — the dashboard (sign-in required; administrators only). Left out of the showroom build, and of any build with `VITE_STUDIO_ENABLED=false`
