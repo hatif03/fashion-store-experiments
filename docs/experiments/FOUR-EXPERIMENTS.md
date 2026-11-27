@@ -55,6 +55,7 @@ Planning assumption, not a forecast: a few hundred homepage visitors by Sunday 1
 - Our browsers stay on `?internal=1`. Reviewers use `?preview=<value>` with that flag.
 - QA first. Production experiments are created only when the code is already deployed, then started. Creating one publishes its split before the start.
 - Read them at the hard stop, Sunday 14:00 IST, ahead of the write-up. EXP-001 keeps its own earlier stopping rule. No early ship on a friendly snapshot.
+- Informational funnel metrics were attached on the afternoon of 27 November, after the starts. They do not change a decision. Flagsmith cannot slice a scorecard by trait, so source and device are read on `/live`.
 - Each result is cross-checked with a frequentist interval on the same counts.
 
 ## EXP-001. Homepage merchandising

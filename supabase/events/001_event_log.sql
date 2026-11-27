@@ -170,6 +170,22 @@ as $$
         group by variant order by variant
       ) v
     ),
+    'experiments', (
+      select coalesce(jsonb_agg(x order by x.flag, x.variant), '[]'::jsonb)
+      from (
+        select substring(kv.key from 6) as flag,
+               kv.value as variant,
+               count(distinct e.visitor_id) as visitors,
+               count(distinct e.visitor_id) filter (where e.event = 'product_viewed') as viewers,
+               count(*) filter (where e.event = 'product_viewed') as views,
+               count(distinct e.visitor_id) filter (where e.event = 'piece_added') as adders,
+               count(distinct e.visitor_id) filter (where e.event = 'associate_message_sent') as repliers
+        from e
+        cross join lateral jsonb_each_text(coalesce(e.metadata, '{}'::jsonb)) as kv(key, value)
+        where kv.key like 'flag\_%' escape '\'
+        group by 1, 2
+      ) x
+    ),
     'products', (
       select coalesce(jsonb_agg(x), '[]'::jsonb)
       from (

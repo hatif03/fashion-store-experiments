@@ -11,7 +11,8 @@ Visits marked internal with `?internal=1` (cleared with `?internal=0`) send noth
 
 - Visitor id: a random id in `localStorage`, created on the first visit. No personal data.
 - Visit id: a random id in `sessionStorage`, with the landing page, referrer host, UTM tags and device of that visit.
-- Traits set on identify: `utm_source` (falls back to the referrer's host, then `direct`), `utm_medium`, `utm_campaign`, `landing_path`, `device` (`mobile` or `desktop`).
+- Traits set on identify, and copied onto every Flagsmith event: `utm_source` (falls back to the referrer's host, then `direct`), `utm_medium`, `utm_campaign`, `landing_path`, `device` (`mobile`, `tablet` or `desktop`), `language` and `timezone`. These do not change who sees which version. Flagsmith's scorecard cannot filter by them; the live page can, for source and device.
+- Every Flagsmith event also carries metadata: the page, the product when there is one, and `flag_<name>` for each experiment the visitor has already been exposed to.
 
 ## Events
 
@@ -19,7 +20,7 @@ Visits marked internal with `?internal=1` (cleared with `?internal=0`) send noth
 
 | Event | Fires when | `value` | Metadata |
 | --- | --- | --- | --- |
-| `page_viewed` | The route changes. Event log only | — | — |
+| `page_viewed` | The route changes | — | `page` |
 | `product_viewed` | A product page mounts, or a piece is taken down from the rail. Once per product per visit | Price | `product_id`, `source` (`rail`, `grid`, `collection`, `shop`, `pairing`, `associate`, `direct`) |
 | `piece_added` | A piece is added to the bag | Price | `product_id`, `source` (`rail_detail`, `product_page`, `associate`, `buy_bar`) |
 | `bag_opened` | The bag drawer opens | Bag subtotal | — |
@@ -49,8 +50,20 @@ The same seven metrics exist in QA and production. Production ids:
 | 837 | Revenue per visitor | `order_placed` | sum | increase |
 | 838 | Engaged visit rate | `engaged_visit` | occurrence | not decrease |
 | 839 | Products viewed per visitor | `product_viewed` | count | increase |
+| 897 | Associate reply rate | `associate_message_sent` | occurrence | increase |
 
-QA ids are 826 to 832 in the same order.
+Six more metrics are informational: their own direction is `informational`, so a lift on them stays neutral and they are not the primary metric. Flagsmith's attach field has no informational choice, so they are attached as `increase` only to put them on the scorecard. Do not ship from them. `pairing_clicked` is zero on the hidden side of EXP-003 because the button is absent, and the greeting does not fire `associate_opened`.
+
+| Id | Name | Event |
+| --- | --- | --- |
+| 1212 | Bag open rate | `bag_opened` |
+| 1213 | Size guide rate | `size_guide_opened` |
+| 1214 | Checkout step rate | `checkout_step_completed` |
+| 1215 | Shop filter rate | `shop_filtered` |
+| 1216 | Pairing click rate | `pairing_clicked` |
+| 1217 | Associate open rate | `associate_opened` |
+
+QA ids are 1205 to 1210 in the same order. QA ids for the original seven are 826 to 832. The associate reply metric is 891 in QA.
 
 ## KPIs
 
@@ -82,6 +95,6 @@ Demo orders measure purchase intent, not real purchases: nothing is charged, so 
 Table `public.events` in the Supabase project `stillform-events`. Row-level security is on with no policies, so nobody can read or write the table directly. Two functions are the only way in, both called from our server functions:
 
 - `record_event(p jsonb)` validates and inserts one event. At most 300 events per visitor per 10 minutes.
-- `analytics_summary(p_hours, p_environment)` returns aggregates only: totals, funnel, countries, cities, recent events, sources, devices, the experiment split, top products and visitors per hour. No visitor ids leave the database.
+- `analytics_summary(p_hours, p_environment)` returns aggregates only: totals, funnel, countries, cities, recent events, sources, devices, the homepage split, the five experiment arms, top products and visitors per hour. No visitor ids leave the database.
 
 Each row records `VERCEL_ENV` (`production`, `preview` or `development`). The live page and the analysis read production only, so local and preview testing never mixes in. The schema is [`supabase/events/001_event_log.sql`](../supabase/events/001_event_log.sql).

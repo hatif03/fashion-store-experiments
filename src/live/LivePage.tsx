@@ -16,6 +16,7 @@ interface Summary {
   sources: { source: string; visitors: number }[];
   devices: { device: string; visitors: number }[];
   variants: { variant: string; visitors: number; viewers: number; adders: number }[];
+  experiments: { flag: string; variant: string; visitors: number; viewers: number; views: number; adders: number; repliers: number }[];
   products: { product_id: string; viewers: number; adders: number }[];
   hourly: { hour: string; visitors: number }[];
 }
@@ -133,6 +134,15 @@ function useNow(interval = 10_000) {
 }
 
 const percent = (part: number, whole: number) => (whole ? `${((part / whole) * 100).toFixed(1)}%` : "—");
+const mean = (part: number, whole: number) => (whole ? (part / whole).toFixed(2) : "—");
+
+const EXPERIMENTS: { flag: string; title: string; control: string; variation: string; caption: string; field: "viewers" | "views" | "adders" | "repliers"; mean?: boolean }[] = [
+  { flag: "homepage_merchandising", title: "Homepage", control: "rail", variation: "grid", caption: "opened a product", field: "viewers" },
+  { flag: "size_suggestion", title: "Suggested size", control: "choose", variation: "suggested", caption: "added the piece", field: "adders" },
+  { flag: "complete_the_look", title: "Complete the look", control: "shown", variation: "hidden", caption: "pieces opened each", field: "views", mean: true },
+  { flag: "associate_greeting", title: "Associate", control: "silent", variation: "speaks", caption: "sent a message", field: "repliers" },
+  { flag: "buy_bar", title: "Phone bar", control: "return", variation: "adds", caption: "added the piece", field: "adders" },
+];
 
 export default function LivePage() {
   const catalog = useCatalog();
@@ -262,27 +272,37 @@ export default function LivePage() {
             <p className="mt-auto text-[12px] leading-relaxed text-muted-foreground">Distinct visitors at each step. Orders are demo orders: nothing is charged, so they measure intent.</p>
           </section>
 
-          <section className="flex flex-col gap-6 bg-background p-6">
+          <section className="flex flex-col gap-4 bg-background p-6">
             <div className="flex items-baseline justify-between gap-4">
-              <h2 className="label text-muted-foreground">Experiment 001 · rail or grid</h2>
-              <span className="label text-[#e8c27a]">{summary?.variants.length ? "Running" : "Not started"}</span>
+              <h2 className="label text-muted-foreground">Five experiments</h2>
+              <span className="label text-[#e8c27a]">Running</span>
             </div>
-            <p className="text-[14px] leading-relaxed">Half of new visitors see the clothing rail, half a plain grid of the same pieces. Does the rail get more people to open a product?</p>
-            <div className="grid grid-cols-2 gap-4">
-              {["rail", "grid"].map((name) => {
-                const arm = summary?.variants.find((entry) => entry.variant === name);
+            <ul className="flex flex-col gap-3">
+              {EXPERIMENTS.map((experiment) => {
+                const arms = (name: string) => {
+                  if (experiment.flag === "homepage_merchandising") {
+                    const arm = summary?.variants.find((entry) => entry.variant === name);
+                    return { visitors: arm?.visitors ?? 0, value: arm?.viewers ?? 0 };
+                  }
+                  const arm = summary?.experiments?.find((entry) => entry.flag === experiment.flag && entry.variant === name);
+                  return { visitors: arm?.visitors ?? 0, value: arm?.[experiment.field] ?? 0 };
+                };
+                const control = arms(experiment.control);
+                const variation = arms(experiment.variation);
+                const show = experiment.mean ? mean : percent;
                 return (
-                  <div key={name} className="flex flex-col gap-3 border-t border-border pt-4">
-                    <p className="label">{name === "rail" ? "Rail · control" : "Grid"}</p>
-                    <p className="type-wide tabular text-[2rem] font-extralight leading-none">{arm ? percent(arm.viewers, arm.visitors) : "—"}</p>
-                    <p className="text-[12px] text-muted-foreground">
-                      opened a product · <span className="tabular">{arm?.visitors ?? 0}</span> visitors
+                  <li key={experiment.flag} className="border-t border-border pt-3">
+                    <p className="text-[13px]">{experiment.title}</p>
+                    <p className="mt-1 flex justify-between gap-3 text-[12px] text-muted-foreground">
+                      <span>{experiment.control} <span className="tabular text-foreground">{show(control.value, control.visitors)}</span></span>
+                      <span>{experiment.variation} <span className="tabular text-foreground">{show(variation.value, variation.visitors)}</span></span>
                     </p>
-                  </div>
+                    <p className="mt-0.5 text-[11px] text-muted-foreground">{experiment.caption}</p>
+                  </li>
                 );
               })}
-            </div>
-            <p className="mt-auto text-[12px] leading-relaxed text-muted-foreground">Raw counts from this page's log. The decision comes from Flagsmith's experiment engine, under the rules written down before launch.</p>
+            </ul>
+            <p className="mt-auto text-[12px] leading-relaxed text-muted-foreground">Counts from this log. Flagsmith decides, and only after the pre-registered rule. Source and device are below; Flagsmith does not slice a result by them.</p>
           </section>
 
           <section className="flex min-h-[22rem] flex-col gap-4 bg-background p-6">

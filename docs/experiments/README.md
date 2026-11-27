@@ -14,6 +14,7 @@ Every experiment on STILLFORM runs on Flagsmith Experimentation: a multivariate 
 8. **Real traffic.** Scripted traffic, if ever used, runs in its own environment and is disclosed. Conversion events are never posted by hand.
 9. **Roll out on the same flag.** End the experiment, then set the winning value on the flag.
 10. **Cross-check.** Each result is re-checked on the same counts. An occurrence metric uses Fisher's exact test on the 2×2 table of exposed visitors and converters. The pieces-per-visitor count uses a Mann–Whitney test. The p-value sits beside Flagsmith's interval and does not change the decision rule.
+11. **Informational metrics.** Funnel events may be attached after the start. Their metric direction is informational, so they show on the scorecard and do not ship a winner. The deciding metric, the split and the hypothesis stay as registered.
 
 ## Index
 

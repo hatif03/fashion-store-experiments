@@ -40,7 +40,10 @@ export function startFlagsmith(): void {
         utm_campaign: visit.utmCampaign || "none",
         landing_path: visit.landingPath,
         device: visit.device,
+        language: (navigator.language || "unknown").toLowerCase().slice(0, 16),
+        timezone: (Intl.DateTimeFormat().resolvedOptions().timeZone || "unknown").slice(0, 40),
       },
+      applicationMetadata: { name: "STILLFORM", version: "0.1.0" },
       enableEvents: true,
       // A short interval: the flush on pagehide is not guaranteed to leave before the page unloads.
       eventProcessorConfig: { flushInterval: 1000 },
@@ -53,9 +56,14 @@ export function startFlagsmith(): void {
   window.addEventListener("pagehide", () => void flagsmith.flushEvents().catch(() => undefined));
 }
 
-/** Records a conversion event for the current identity. Waits for flags so the event carries the identity. */
+/** Records a conversion event for the current identity. Waits for flags so the event carries the identity and its traits. */
 export function sendFlagsmithEvent(event: string, value: number | undefined, metadata: Record<string, unknown>): void {
-  const send = () => flagsmith.trackEvent(event, { value, metadata });
+  const send = () =>
+    flagsmith.trackEvent(event, {
+      value,
+      // Traits already travel with the identity. The variant tags and the page let a later read of the warehouse join an event to what the visitor had seen.
+      metadata: { ...assignedFlags(), ...metadata, page: window.location.pathname.slice(0, 80) },
+    });
   if (status === "ready") send();
   else if (status === "loading") pending.push(send);
 }
