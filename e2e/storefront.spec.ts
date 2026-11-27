@@ -45,7 +45,7 @@ test("a piece taken off the rail can be added to the bag", async ({ page }) => {
   await dialog.locator("label", { hasText: /^L$/ }).click();
   await expect(dialog.getByText("Only 1 left in L.")).toBeVisible();
   await dialog.getByRole("button", { name: "Add to bag" }).click();
-  await expect(dialog.getByRole("button", { name: "Add to bag" })).toBeDisabled();
+  await expect(dialog.getByRole("button", { name: "Added" })).toBeDisabled();
 
   await dialog.getByRole("button", { name: "View bag (1)" }).click();
   await expect(detail(page)).toHaveCount(0);

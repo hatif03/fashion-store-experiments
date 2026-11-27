@@ -46,6 +46,9 @@ export function PurchasePanel({ product, colorwayId, onColorwayChange, onViewBag
   const [note, setMessage] = React.useState<{ tone: "error" | "done"; text: string; colorwayId: string } | null>(null);
   const sizeGroup = React.useRef<HTMLFieldSetElement>(null);
   const [guideOpen, setGuideOpen] = React.useState(false);
+  const [confirming, setConfirming] = React.useState(false);
+  const quietUntil = React.useRef(0);
+  const confirmTimer = React.useRef(0);
 
   // A size chosen in one colourway carries over only if it is in stock in the current one.
   const size = chosenSize && (variantFor(product, colorway.id, chosenSize)?.stock ?? 0) > 0 ? chosenSize : null;
@@ -78,10 +81,18 @@ export function PurchasePanel({ product, colorwayId, onColorwayChange, onViewBag
       return;
     }
     if (remaining <= 0) return;
+    const now = performance.now();
+    if (now < quietUntil.current) return;
+    quietUntil.current = now + 1200;
+    window.clearTimeout(confirmTimer.current);
+    setConfirming(true);
+    confirmTimer.current = window.setTimeout(() => setConfirming(false), 1200);
     bag.dispatch({ type: "add", sku: variant.sku });
     track("piece_added", { value: dollars(product.price), productId: product.id, metadata: { source, size: variant.size, colorway: colorway.id } });
     setMessage({ tone: "done", text: `Added ${product.name}, ${colorway.name}, size ${variant.size}.`, colorwayId: colorway.id });
   };
+
+  React.useEffect(() => () => window.clearTimeout(confirmTimer.current), []);
 
   let stockNote = "";
   if (soldOut) stockNote = `Sold out in ${colorway.name.toLowerCase()}.`;
@@ -211,9 +222,9 @@ export function PurchasePanel({ product, colorwayId, onColorwayChange, onViewBag
           type="button"
           onClick={add}
           disabled={soldOut || (variant !== undefined && remaining <= 0)}
-          className="group relative flex h-13 items-center justify-between overflow-hidden bg-foreground px-5 text-[13px] font-medium tracking-[0.06em] text-background transition-[background-color,opacity] hover:bg-foreground/90 disabled:cursor-not-allowed disabled:opacity-40"
+          className={`group relative flex h-13 items-center justify-between overflow-hidden px-5 text-[13px] font-medium tracking-[0.06em] transition-[background-color,color,opacity] hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40 ${confirming ? "bg-background text-foreground ring-1 ring-inset ring-foreground" : "bg-foreground text-background"}`}
         >
-          <span>{soldOut ? "Sold out" : "Add to bag"}</span>
+          <span aria-live="polite">{soldOut ? "Sold out" : confirming ? "Added" : "Add to bag"}</span>
           <span className="tabular font-light">{formatPrice(catalog, product.price)}</span>
         </button>
         <div aria-live="polite" className="min-h-6 text-[13px]">

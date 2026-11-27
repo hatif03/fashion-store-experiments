@@ -30,3 +30,7 @@ Review without enrolling: `?internal=1&preview.buy_bar=adds` on a phone.
 | Checkout guardrail | 828 | 835 |
 | Engaged visit | 831 | 838 |
 | Revenue per visitor | 830 | 837 |
+
+## Bug fixes
+
+**01:45 IST, Saturday 28 November 2026.** The phone bar's "Add to bag" did not change when it was tapped, so a second tap added another copy. It now reads "Added" and ignores another tap for just over a second. One tap is still one piece. The metric is unchanged.

@@ -28,3 +28,7 @@ Review without enrolling: `?internal=1&preview.size_suggestion=suggested` or `pr
 | Checkout guardrail | 828 | 835 |
 | Engaged visit | 831 | 838 |
 | Revenue per visitor | 830 | 837 |
+
+## Bug fixes
+
+**01:45 IST, Saturday 28 November 2026.** Add to bag gave no visible change, so people tapped again and found several copies in the bag. The button now reads "Added" and ignores another tap for just over a second, and the bag count in the header swells. One tap is still one piece. The metric is unchanged.

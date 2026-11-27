@@ -62,7 +62,7 @@ export function SiteHeader() {
             </Link>
           )}
           <button type="button" onClick={() => bag.setOpen(true)} className="label link-draw py-1" aria-label={`Bag, ${bag.count} ${bag.count === 1 ? "item" : "items"}`}>
-            Bag <span className="tabular ml-1 inline-block min-w-[1ch]">{bag.count}</span>
+            Bag <BagCount count={bag.count} />
           </button>
         </div>
       </div>
@@ -111,4 +111,21 @@ export function SiteHeader() {
       </div>
     </header>
   );
+}
+
+/** The number swells when a piece lands, so a tap on Add is visible even if the button itself is covered. */
+function BagCount({ count }: { count: number }) {
+  const previous = React.useRef(count);
+  const [grown, setGrown] = React.useState(false);
+  React.useEffect(() => {
+    if (count <= previous.current) {
+      previous.current = count;
+      return;
+    }
+    previous.current = count;
+    setGrown(true);
+    const timer = window.setTimeout(() => setGrown(false), 700);
+    return () => window.clearTimeout(timer);
+  }, [count]);
+  return <span className={`tabular ml-1 inline-block min-w-[1ch] transition-transform duration-300 ${grown ? "scale-125 text-foreground" : ""}`}>{count}</span>;
 }

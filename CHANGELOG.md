@@ -2,6 +2,10 @@
 
 Every change to the store, newest first. Experiment runs and decisions are in `docs/experiments/` and `docs/DECISIONS.md`.
 
+## 2026-11-28
+
+- Fixed three things visitors reported overnight. Add to bag now reads "Added" and ignores a second tap for a moment, so one tap is one piece. The associate greeting opens once per visit instead of on every piece, closes on the way to checkout, and keeps its question with the reply it belongs to. Pieces that never turn on hover have no back photograph; that is unchanged.
+
 ## 2026-11-27
 
 - Ran a final check of the live showroom and a disclosed simulation of 40 identities in the QA Flagsmith environment only. Production experiments were left running and were not sent scripted events. See D-021.

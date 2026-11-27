@@ -91,7 +91,11 @@ export function SalesAssociate() {
   const field = React.useRef<HTMLTextAreaElement>(null);
   const session = React.useRef("");
   const openedFor = React.useRef("");
+  const greeted = React.useRef(false);
+  const turnsRef = React.useRef(turns);
+  const [noticeName, setNoticeName] = React.useState<string | null>(null);
   const [due, setDue] = React.useState(false);
+  turnsRef.current = turns;
   const onProduct = location.pathname.startsWith("/products/");
   const slug = onProduct ? location.pathname.split("/")[2] ?? "" : "";
   const pageProduct = slug ? productBySlug(catalog, decodeURIComponent(slug)) : undefined;
@@ -116,11 +120,30 @@ export function SalesAssociate() {
   }, [onProduct, location.pathname]);
 
   React.useEffect(() => {
+    const leftProduct = openedFor.current !== "" && openedFor.current !== location.pathname;
+    if (location.pathname.startsWith("/checkout") || leftProduct) setOpen(false);
+    if (leftProduct && turnsRef.current.length === 0) {
+      setPrompted(false);
+      setNoticeName(null);
+    }
+  }, [location.pathname]);
+
+  React.useEffect(() => {
+    const preview = new URLSearchParams(window.location.search).get("preview.associate_greeting") === "speaks";
     if (greeting !== "speaks" || !pageProduct || openedFor.current === location.pathname) return;
+    if (!preview && greeted.current) return;
+    if (turnsRef.current.length > 0 && noticeName) {
+      openedFor.current = location.pathname;
+      greeted.current = true;
+      setOpen(true);
+      return;
+    }
     openedFor.current = location.pathname;
+    greeted.current = true;
+    setNoticeName(pageProduct.name);
     setPrompted(true);
     setOpen(true);
-  }, [greeting, pageProduct, location.pathname]);
+  }, [greeting, pageProduct, location.pathname, noticeName]);
 
   React.useEffect(() => {
     const node = scroller.current;
@@ -221,14 +244,14 @@ export function SalesAssociate() {
             </button>
           </div>
           <div ref={scroller} className="flex flex-1 flex-col gap-4 overflow-y-auto px-4 py-4">
-            {prompted && pageProduct ? (
-              <p className="text-[14px] leading-relaxed">{`The ${pageProduct.name} is in front of you. What should I tell you about it?`}</p>
+            {prompted && noticeName ? (
+              <p className="text-[14px] leading-relaxed">{`The ${noticeName} is in front of you. What should I tell you about it?`}</p>
             ) : (
               <p className="text-[14px] leading-relaxed text-muted-foreground">{WELCOME}</p>
             )}
-            {turns.length === 0 && prompted && pageProduct && (
-              <button type="button" className="self-start border border-border px-3 py-2 text-left text-[13px] hover:border-foreground" onClick={() => void send(`How does the ${pageProduct.name} fit?`)}>
-                {`How does the ${pageProduct.name} fit?`}
+            {turns.length === 0 && prompted && noticeName && (
+              <button type="button" className="self-start border border-border px-3 py-2 text-left text-[13px] hover:border-foreground" onClick={() => void send(`How does the ${noticeName} fit?`)}>
+                {`How does the ${noticeName} fit?`}
               </button>
             )}
             {turns.length === 0 && !prompted && (

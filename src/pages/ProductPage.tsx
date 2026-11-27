@@ -238,6 +238,10 @@ function BuyBar({ product, colorwayId, size, target }: { product: Product; color
   const variant = size ? variantFor(product, colorwayId, size) : undefined;
   const inBag = variant ? (bag.lines.find((line) => line.sku === variant.sku)?.quantity ?? 0) : 0;
   const canAdd = mode === "adds" && Boolean(variant && variant.stock - inBag > 0);
+  const [confirming, setConfirming] = React.useState(false);
+  const quietUntil = React.useRef(0);
+  const confirmTimer = React.useRef(0);
+  React.useEffect(() => () => window.clearTimeout(confirmTimer.current), []);
   // The associate's floating button moves up while the bar is showing, so it never covers the button.
   React.useEffect(() => {
     if (visible && phone) document.documentElement.dataset.buybar = "";
@@ -258,9 +262,15 @@ function BuyBar({ product, colorwayId, size, target }: { product: Product; color
         </div>
         <button
           type="button"
-          className="h-11 shrink-0 bg-foreground px-5 text-[13px] font-medium tracking-[0.06em] text-background"
+          className={`h-11 shrink-0 px-5 text-[13px] font-medium tracking-[0.06em] transition-[background-color,color] ${confirming ? "bg-background text-foreground ring-1 ring-inset ring-foreground" : "bg-foreground text-background"}`}
           onClick={() => {
             if (canAdd && variant) {
+              const now = performance.now();
+              if (now < quietUntil.current) return;
+              quietUntil.current = now + 1200;
+              window.clearTimeout(confirmTimer.current);
+              setConfirming(true);
+              confirmTimer.current = window.setTimeout(() => setConfirming(false), 1200);
               bag.dispatch({ type: "add", sku: variant.sku });
               track("piece_added", { value: dollars(product.price), productId: product.id, metadata: { source: "buy_bar", size: variant.size, colorway: colorwayId } });
               return;
@@ -269,7 +279,7 @@ function BuyBar({ product, colorwayId, size, target }: { product: Product; color
             target.current?.querySelector<HTMLInputElement>("input:not(:disabled)")?.focus({ preventScroll: true });
           }}
         >
-          {canAdd ? "Add to bag" : "Choose a size"}
+          <span aria-live="polite">{canAdd ? (confirming ? "Added" : "Add to bag") : "Choose a size"}</span>
         </button>
       </div>
     </div>

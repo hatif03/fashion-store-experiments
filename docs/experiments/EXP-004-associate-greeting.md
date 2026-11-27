@@ -29,3 +29,7 @@ Review without enrolling: `?internal=1&preview.associate_greeting=speaks`. The p
 | Add-to-bag guardrail | 827 | 834 |
 | Engaged visit | 831 | 838 |
 | Revenue per visitor | 830 | 837 |
+
+## Bug fixes
+
+**01:45 IST, Saturday 28 November 2026.** The speaks variation was opening on every product page, staying open on the way to checkout, and rewriting its question when the visitor moved to another piece while the previous reply stayed on screen. It still opens once, after 8 seconds, with the same canned line, on the first product page where someone stays that long. Closing it, leaving that piece, or reaching checkout keeps it shut for the rest of the visit. The question stays the one that was asked. A reviewer preview still opens on each product. The exposure rule is unchanged: 8 seconds on a product page, and leaving before that enrolls nobody.
