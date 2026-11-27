@@ -13,7 +13,7 @@ Every experiment on STILLFORM runs on Flagsmith Experimentation: a multivariate 
 7. **QA is separate.** We test in the QA environment. Our own clicks never reach production results.
 8. **Real traffic.** Scripted traffic, if ever used, runs in its own environment and is disclosed. Conversion events are never posted by hand.
 9. **Roll out on the same flag.** End the experiment, then set the winning value on the flag.
-10. **Cross-check.** Each result is re-checked with a frequentist test on the same counts (`analysis/`), following the `AB-Testing-main` reference.
+10. **Cross-check.** Each result is re-checked on the same counts. An occurrence metric uses Fisher's exact test on the 2×2 table of exposed visitors and converters. The pieces-per-visitor count uses a Mann–Whitney test. The p-value sits beside Flagsmith's interval and does not change the decision rule.
 
 ## Index
 

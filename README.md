@@ -32,7 +32,9 @@ The public showroom is [stillform-sepia.vercel.app](https://stillform-sepia.verc
 | X | https://stillform-sepia.vercel.app/?utm_source=x&utm_medium=post&utm_campaign=togglewars |
 | LinkedIn | https://stillform-sepia.vercel.app/?utm_source=linkedin&utm_medium=post&utm_campaign=togglewars |
 
-Without Supabase configured, the store runs on its built-in demo collection, with checkout off. With it, products, stock and orders live in your database and are managed at `/admin`.
+## The store
+
+Without Supabase configured, the store runs on its built-in collection and a demo checkout. With it, products, stock and orders live in your database and are managed at `/admin`.
 
 The shoot list for replacing the demo photography is in [`docs/ASSET-PLAN.md`](docs/ASSET-PLAN.md).
 
