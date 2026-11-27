@@ -51,7 +51,9 @@ The same paragraph everywhere gets removed. Write it in the voice of that place.
 
 > STILLFORM is a small demo clothing store. The homepage is an interactive rail: pull a piece down to see it. Checkout is a demo, so nothing is charged. It's part of a public experiment, which means the page can differ slightly from someone else's. If you have a minute, open it on your phone too.
 
-Don't buy traffic, don't ask a group to click in exchange for nothing, and don't send scripted sessions at the production site. If Sunday 10:00 IST arrives with either version under Flagsmith's floor, scripted traffic runs in a separate Flagsmith environment and the write-up says so.
+Don't buy traffic, don't ask a group to click in exchange for nothing, and don't send scripted sessions at the production site. If Sunday 10:00 IST arrives with either version under Flagsmith's floor, any further scripted traffic stays in the QA environment and the write-up says so. It is not posted into production afterwards.
+
+A QA simulation already ran on the afternoon of 27 November, before the public posts. Forty scripted identities exercised all five experiments in QA only. The rates were fixed, the traits say `qa-sim` / `script` / `disclosed`, and the decision is D-021. Production results stay limited to real visits. The QA scorecard is a pipeline check, not a result.
 
 ## Log
 

@@ -4,6 +4,7 @@ Every change to the store, newest first. Experiment runs and decisions are in `d
 
 ## 2026-11-27
 
+- Ran a final check of the live showroom and a disclosed simulation of 40 identities in the QA Flagsmith environment only. Production experiments were left running and were not sent scripted events. See D-021.
 - Started EXP-001 in production at 04:22 IST. The showroom is at https://stillform-sepia.vercel.app and the visitor map is at `/live`. The store is frozen until the experiment ends.
 - Started EXP-002 to EXP-005 in production at 05:32 IST, Friday 27 November, after the code was deployed. Experiments 854, 855, 856 and 857. The homepage hero is unchanged.
 - Removed the `AB-Testing-main` tutorial. The cross-check it was standing in for is now named in the experiment rules: Fisher's exact test for occurrence metrics, Mann–Whitney for pieces viewed per visitor.
