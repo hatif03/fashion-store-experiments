@@ -1,6 +1,6 @@
 # Five experiments
 
-Built. EXP-001 is running in production. EXP-002 to EXP-005 are running in QA. Production for those four is created only after this code is deployed, then started. Nothing here changes the homepage hero.
+Built. All five are running in production. EXP-001 started at 04:22 IST. EXP-002 to EXP-005 started at 05:32 IST, Friday 27 November 2026. The homepage hero is unchanged.
 
 Each experiment is one feature, one flag, one primary metric. Five flags can run at once: Flagsmith allows one active experiment per flag, not one per project. The same visitor id is used everywhere, so a person can be in all five. Assignment is independent. That keeps each comparison fair, and it adds noise, which the power section accounts for.
 

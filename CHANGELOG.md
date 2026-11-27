@@ -5,7 +5,7 @@ Every change to the store, newest first. Experiment runs and decisions are in `d
 ## 2026-11-27
 
 - Started EXP-001 in production at 04:22 IST. The showroom is at https://stillform-sepia.vercel.app and the visitor map is at `/live`. The store is frozen until the experiment ends.
-- Built EXP-002 to EXP-005 behind their own flags. Exposure is recorded only where each feature is on screen. QA experiments 846 to 849 are running. Production is not started.
+- Started EXP-002 to EXP-005 in production at 05:32 IST, Friday 27 November, after the code was deployed. Experiments 854, 855, 856 and 857. The homepage hero is unchanged.
 - Fixed the Vercel functions, which crashed on Vercel because Node couldn't resolve the `@/` alias, extensionless imports or JSON imports. `npm run build:vercel` now bundles each function from `server/` into `.vercel/output`.
 - Deployed the showroom to Vercel at https://stillform-sepia.vercel.app.
 - Fixed `npm run preflight -- --demo` on Windows, where it couldn't start the build.

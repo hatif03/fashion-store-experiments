@@ -1,6 +1,6 @@
 # EXP-005: The phone buy bar adds
 
-**Status:** running in QA (experiment 849, since this build). Production is not created until this code is deployed. The reasoning is in [FOUR-EXPERIMENTS.md](FOUR-EXPERIMENTS.md).
+**Status:** running in production (experiment 857, started 05:32 IST, Friday 27 November 2026). QA experiment 849 is also running.
 
 ## Pre-registration
 
@@ -15,7 +15,7 @@
 | Population | Phone product-page visitors who scroll the panel away. This may stay under 50 per version. Then Flagsmith shows nothing, the event log supplies the rate, and no winner is called |
 | Split | 100% of that population, 50/50 |
 | Decision rule | Ship `adds` only above 95% with the credible interval clear of zero, and only with 50 people per version. Otherwise the bar keeps scrolling back |
-| Run window | Production start: not yet. Read at Sunday 14:00 IST |
+| Run window | Started 05:32 IST, Friday 27 November 2026 (2026-11-27T00:02:07Z). Read at Sunday 14:00 IST |
 
 An add from the panel, before the bar appears, counts for EXP-002 only. An add from the bar counts for EXP-002 and EXP-005.
 
@@ -25,7 +25,7 @@ Review without enrolling: `?internal=1&preview.buy_bar=adds` on a phone.
 
 | | QA | Production |
 | --- | --- | --- |
-| Experiment | 849, running | Not created |
+| Experiment | 849, running | 857, running since 05:32 IST |
 | Add-to-bag metric | 827 | 834 |
 | Checkout guardrail | 828 | 835 |
 | Engaged visit | 831 | 838 |

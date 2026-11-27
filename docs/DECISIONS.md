@@ -4,7 +4,9 @@ Newest first. Each entry says what was decided, why, and what it rules out.
 
 ## 2026-11-27
 
-**D-018. EXP-002 to EXP-005 are built and running in QA.** Each flag enrolls only where its feature is on screen: the product page for a suggested size, the companion block, the associate after 8 seconds, and the phone buy bar when it appears. The homepage hero is unchanged. QA experiments 846 to 849 are running. Production experiments are created after this code is deployed, then started, before any public post. Reviewers use `?preview.<flag>=<value>` with `?internal=1`.
+**D-019. EXP-002 to EXP-005 started in production at 05:32 IST on Friday 27 November.** The code was already on https://stillform-sepia.vercel.app. Experiments 854, 855, 856 and 857. The homepage hero was not changed. Public posts come after this start.
+
+**D-018. EXP-002 to EXP-005 are built.** Each flag enrolls only where its feature is on screen: the product page for a suggested size, the companion block, the associate after 8 seconds, and the phone buy bar when it appears. The homepage hero is unchanged. QA experiments 846 to 849 are running. Reviewers use `?preview.<flag>=<value>` with `?internal=1`.
 
 **D-017. A fifth experiment, on what gets a piece into the bag.** The phone buy bar. Today it only scrolls back to the sizes. The variation adds the size the visitor already chose. Deciding metric `piece_added`. It is in [`experiments/FOUR-EXPERIMENTS.md`](experiments/FOUR-EXPERIMENTS.md) as EXP-005. Phones who scroll the panel away are the whole sample, so it may not reach 50 per version. No winner is called from a smaller log.
 

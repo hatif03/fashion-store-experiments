@@ -1,6 +1,6 @@
 # EXP-003: Complete the look
 
-**Status:** running in QA (experiment 847, since this build). Production is not created until this code is deployed. The reasoning is in [FOUR-EXPERIMENTS.md](FOUR-EXPERIMENTS.md).
+**Status:** running in production (experiment 855, started 05:32 IST, Friday 27 November 2026). QA experiment 847 is also running.
 
 ## Pre-registration
 
@@ -15,7 +15,7 @@
 | Population | Product-page visitors |
 | Split | 100% of that population, 50/50 |
 | Decision rule | Ship `hidden` only above 95% with the credible interval clear of zero. Otherwise the block stays |
-| Run window | Production start: not yet. Read at Sunday 14:00 IST |
+| Run window | Started 05:32 IST, Friday 27 November 2026 (2026-11-27T00:02:04Z). Read at Sunday 14:00 IST |
 
 `pairing_clicked` stays a check that `hidden` rendered. It is zero on that side because the button is absent, so it is not a result.
 
@@ -25,7 +25,7 @@ Review without enrolling: `?internal=1&preview.complete_the_look=hidden`.
 
 | | QA | Production |
 | --- | --- | --- |
-| Experiment | 847, running | Not created |
+| Experiment | 847, running | 855, running since 05:32 IST |
 | Products viewed per visitor | 832 | 839 |
 | Add-to-bag guardrail | 827 | 834 |
 | Engaged visit | 831 | 838 |

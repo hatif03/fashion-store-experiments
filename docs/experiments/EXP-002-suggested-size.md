@@ -1,6 +1,6 @@
 # EXP-002: A suggested size
 
-**Status:** running in QA (experiment 846, since this build). Production is not created until this code is deployed. The reasoning is in [FOUR-EXPERIMENTS.md](FOUR-EXPERIMENTS.md) and is frozen here at the production start.
+**Status:** running in production (experiment 854, started 05:32 IST, Friday 27 November 2026). QA experiment 846 is also running.
 
 ## Pre-registration
 
@@ -15,7 +15,7 @@
 | Population | Product-page visitors. Homepage visitors who never open a product are not enrolled |
 | Split | 100% of that population, 50/50 |
 | Decision rule | Ship `suggested` only above 95% with the credible interval clear of zero. Below 5%, `choose` is confirmed. Otherwise today's behaviour stays |
-| Run window | Production start: not yet. Read at Sunday 14:00 IST with the other three |
+| Run window | Started 05:32 IST, Friday 27 November 2026 (2026-11-27T00:02:02Z). Read at Sunday 14:00 IST |
 
 Review without enrolling: `?internal=1&preview.size_suggestion=suggested` or `preview.size_suggestion=choose`.
 
@@ -23,7 +23,7 @@ Review without enrolling: `?internal=1&preview.size_suggestion=suggested` or `pr
 
 | | QA | Production |
 | --- | --- | --- |
-| Experiment | 846, running | Not created |
+| Experiment | 846, running | 854, running since 05:32 IST |
 | Add-to-bag metric | 827 | 834 |
 | Checkout guardrail | 828 | 835 |
 | Engaged visit | 831 | 838 |

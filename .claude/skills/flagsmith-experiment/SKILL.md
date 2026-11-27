@@ -9,7 +9,7 @@ description: >-
 
 # Flagsmith experiment
 
-Track 1 is judged on one experiment done well. We run five, one feature each, written in `docs/experiments/FOUR-EXPERIMENTS.md`. EXP-001 is running in production. EXP-002 to EXP-005 are running in QA and start in production only after the code that reads them is deployed. A flag still has only one experiment at a time. The plan is `docs/HACKATHON-PLAN.md`, the rules are `docs/experiments/README.md`, events are `docs/METRICS.md`, and decisions are `docs/DECISIONS.md`. Update those files, the experiment file and `CHANGELOG.md` with every change.
+Track 1 is judged on one experiment done well. We run five, one feature each, written in `docs/experiments/FOUR-EXPERIMENTS.md`. All five are running in production. EXP-002 to EXP-005 started at 05:32 IST on 27 November 2026, experiments 854 to 857. A flag still has only one experiment at a time. The plan is `docs/HACKATHON-PLAN.md`, the rules are `docs/experiments/README.md`, events are `docs/METRICS.md`, and decisions are `docs/DECISIONS.md`. Update those files, the experiment file and `CHANGELOG.md` with every change.
 
 ## EXP-001, already decided
 
